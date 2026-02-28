@@ -1,0 +1,47 @@
+site_name: Chagrin Falls
+site_description: Developer documentation for the Chagrin Falls text-based mystery game.
+repo_url: https://github.com/vincepr/ChagrinFalls
+repo_name: vincepr/ChagrinFalls
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: index.md
+  - Systems:
+    - Dialogue Manager: systems/dialogue-manager.md
+    - Player Inventory: systems/player-inventory.md
+    - Player Journal: systems/player-journal.md
+    - Conditions: systems/conditions.md
+  - Godot:
+    - Overview: godot/overview.md
+  - How-Tos:
+    - Add a Conversation: how-tos/add-a-conversation.md
+

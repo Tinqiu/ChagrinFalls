@@ -10,4 +10,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ChagrinFalls.Backend\ChagrinFalls.Backend.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Scripts\InventoryScreen.cs.uid" />
+    <Content Include="Scripts\MenuBar.cs.uid" />
+  </ItemGroup>
 </Project>
