@@ -230,7 +230,7 @@ public partial class Main : Control
     private void OnCharacterInteracted(string poiId)
     {
         var poi = _locationManager.CurrentLocation.PointsOfInterest
-            .FirstOrDefault(p => p.Id == poiId);
+            .FirstOrDefault(p => string.Equals(p.Id, poiId, StringComparison.OrdinalIgnoreCase));
 
         if (poi?.ConversationEventId is null ||
             !_conversationEvents.TryGetValue(poi.ConversationEventId, out var evt))

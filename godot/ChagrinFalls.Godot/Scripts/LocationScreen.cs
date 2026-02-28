@@ -29,13 +29,25 @@ public partial class LocationScreen : Control
         _poiContainer      = GetNode<VBoxContainer>("VBoxContainer/PoiContainer");
     }
 
+    public override void _ExitTree()
+    {
+        _locationManager.OnLocationChanged -= Refresh;
+    }
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Binds this screen to a <see cref="LocationManager"/> and renders the current location.
+    /// Safe to call only once; subsequent calls are ignored.
     /// </summary>
     public void Initialise(LocationManager locationManager)
     {
+        if (_locationManager != null)
+        {
+            GD.PushWarning($"{nameof(LocationScreen)}.{nameof(Initialise)} called more than once — ignoring.");
+            return;
+        }
+
         _locationManager = locationManager;
         _locationManager.OnLocationChanged += Refresh;
         Refresh(_locationManager.CurrentLocation);

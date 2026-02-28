@@ -11,8 +11,6 @@ public class LocationManager
     private readonly Dictionary<string, Location> _locations;
     private readonly GameState _gameState;
 
-    private Location _currentLocation;
-
     /// <summary>
     /// Raised when the player travels to a new location, or when the current
     /// location's points of interest change (e.g. after picking up an item).
@@ -31,15 +29,17 @@ public class LocationManager
         _gameState = gameState;
         _locations = locations.ToDictionary(l => l.Id, StringComparer.OrdinalIgnoreCase);
 
+        ArgumentException.ThrowIfNullOrWhiteSpace(startingLocationId);
+
         if (!_locations.TryGetValue(startingLocationId, out var start))
             throw new ArgumentException(
                 $"Starting location '{startingLocationId}' was not found.", nameof(startingLocationId));
 
-        _currentLocation = start;
+        CurrentLocation = start;
     }
 
     /// <summary>The location the player is currently at.</summary>
-    public Location CurrentLocation => _currentLocation;
+    public Location CurrentLocation { get; private set; }
 
     /// <summary>All locations in the world.</summary>
     public IReadOnlyCollection<Location> AllLocations => _locations.Values;
@@ -52,11 +52,12 @@ public class LocationManager
     /// <exception cref="ArgumentException">Thrown when the location ID is unknown.</exception>
     public void TravelTo(string locationId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(locationId);
         if (!_locations.TryGetValue(locationId, out var location))
             throw new ArgumentException($"Location '{locationId}' was not found.", nameof(locationId));
 
-        _currentLocation = location;
-        OnLocationChanged?.Invoke(_currentLocation);
+        CurrentLocation = location;
+        OnLocationChanged?.Invoke(CurrentLocation);
     }
 
     /// <summary>
@@ -72,12 +73,12 @@ public class LocationManager
     /// </exception>
     public string PickUpItem(string poiId)
     {
-        var poi = _currentLocation.PointsOfInterest
+        var poi = CurrentLocation.PointsOfInterest
             .FirstOrDefault(p => string.Equals(p.Id, poiId, StringComparison.OrdinalIgnoreCase));
 
         if (poi is null)
             throw new ArgumentException(
-                $"POI '{poiId}' was not found at location '{_currentLocation.Id}'.", nameof(poiId));
+                $"POI '{poiId}' was not found at location '{CurrentLocation.Id}'.", nameof(poiId));
 
         if (poi.Type != PointOfInterestType.Item)
             throw new ArgumentException(
@@ -87,10 +88,10 @@ public class LocationManager
             throw new ArgumentException(
                 $"Item POI '{poiId}' has no ItemId set.", nameof(poiId));
 
-        _currentLocation.PointsOfInterest.Remove(poi);
+        CurrentLocation.PointsOfInterest.Remove(poi);
         _gameState.Inventory.AddItem(poi.ItemId);
 
-        OnLocationChanged?.Invoke(_currentLocation);
+        OnLocationChanged?.Invoke(CurrentLocation);
 
         return poi.ItemId;
     }
