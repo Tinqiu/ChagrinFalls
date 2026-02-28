@@ -1,6 +1,7 @@
-namespace ChagrinFalls.Backend.Effects;
 using ChagrinFalls.Backend.Models;
 using ChagrinFalls.Backend.Systems;
+
+namespace ChagrinFalls.Backend.Effects;
 /// <summary>Removes an item from the player's inventory.</summary>
 public class RemoveItemEffectHandler : IEffectHandler
 {

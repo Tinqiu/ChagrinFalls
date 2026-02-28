@@ -62,6 +62,8 @@ public class Storybook
     public string Description { get; set; }
     public string StartingLocationId { get; set; }
     public Dictionary<string, Location> Locations { get; set; }
+    public Dictionary<string, Character> Characters { get; set; }
+    public Dictionary<string, Item> Items { get; set; }
     public Dictionary<string, ConversationEvent> ConversationEvents { get; set; }
 }
 ```
@@ -73,6 +75,8 @@ public class Storybook
 | `Description` | Short summary shown as a tooltip on the selection screen. |
 | `StartingLocationId` | Must match a key in `Locations`. |
 | `Locations` | All locations keyed by their `id`. |
+| `Characters` | All characters in this storybook, keyed by character `id`. Optional — may be omitted or empty. |
+| `Items` | All items in this storybook, keyed by item `id`. Optional — may be omitted or empty. |
 | `ConversationEvents` | All conversation events keyed by their `id`. |
 
 ---
