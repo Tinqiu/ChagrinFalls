@@ -1,6 +1,7 @@
-namespace ChagrinFalls.Backend.Effects;
 using ChagrinFalls.Backend.Models;
 using ChagrinFalls.Backend.Systems;
+
+namespace ChagrinFalls.Backend.Effects;
 /// <summary>Adds an item to the player's inventory.</summary>
 public class AddItemEffectHandler : IEffectHandler
 {
