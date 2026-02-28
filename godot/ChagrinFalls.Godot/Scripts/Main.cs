@@ -53,7 +53,25 @@ public partial class Main : Control
         var loaded = loader.LoadAll(storybooksDir, (file, ex) =>
             GD.PrintErr($"Failed to load storybook '{file}': {ex.Message}"));
 
-        _storybooks = loaded.ToDictionary(s => s.Id);
+        var storybookDict = new Dictionary<string, Storybook>(StringComparer.OrdinalIgnoreCase);
+        foreach (var storybook in loaded)
+        {
+            if (storybook.Id is null)
+            {
+                GD.PrintErr("Encountered a storybook with a null ID. Skipping.");
+                continue;
+            }
+
+            if (storybookDict.ContainsKey(storybook.Id))
+            {
+                GD.PrintErr($"Duplicate storybook ID '{storybook.Id}' encountered. Skipping duplicate.");
+                continue;
+            }
+
+            storybookDict[storybook.Id] = storybook;
+        }
+
+        _storybooks = storybookDict;
     }
 
     // ── Game initialisation ───────────────────────────────────────────────────
