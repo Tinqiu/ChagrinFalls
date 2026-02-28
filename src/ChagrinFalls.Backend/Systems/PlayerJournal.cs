@@ -24,7 +24,7 @@ public class PlayerJournal
     /// Returns whether the player has learned the specified piece of information.
     /// </summary>
     /// <param name="informationId">The unique identifier of the information to check.</param>
-    public bool HasLearned(string informationId) =>
+    public bool HasLearned(string? informationId) =>
         !string.IsNullOrWhiteSpace(informationId) && _learnedInformation.Contains(informationId);
 
     /// <summary>

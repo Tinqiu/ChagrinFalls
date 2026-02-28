@@ -27,12 +27,13 @@ public class DialogueLine
 
     /// <summary>
     /// Player choices presented after this dialogue line.
-    /// When empty, the conversation advances automatically to <see cref="NextDialogueLineId"/>.
+    /// When no choices are available after condition filtering (including when <see cref="Choices"/> is empty),
+    /// the conversation advances automatically to <see cref="NextDialogueLineId"/>.
     /// </summary>
     public List<Choice> Choices { get; set; } = new();
 
     /// <summary>
-    /// The ID of the next dialogue line to display when no choices are present.
+    /// The ID of the next dialogue line to display when no choices are available after condition filtering.
     /// Null indicates the conversation ends after this line.
     /// </summary>
     public string? NextDialogueLineId { get; set; }

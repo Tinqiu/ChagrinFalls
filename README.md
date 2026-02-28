@@ -57,7 +57,7 @@ dotnet build
 dotnet test src/ChagrinFalls.Tests
 ```
 
-All 37 unit tests should pass. The backend has no external dependencies beyond the .NET SDK.
+All unit tests should pass. The backend has no external dependencies beyond the .NET SDK.
 
 ### 3 — Open the Godot project
 

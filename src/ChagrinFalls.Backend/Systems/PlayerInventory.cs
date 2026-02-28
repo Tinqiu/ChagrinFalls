@@ -25,14 +25,14 @@ public class PlayerInventory
     /// </summary>
     /// <param name="itemId">The unique identifier of the item to remove.</param>
     /// <returns><c>true</c> if the item was found and removed; <c>false</c> otherwise.</returns>
-    public bool RemoveItem(string itemId) =>
+    public bool RemoveItem(string? itemId) =>
         !string.IsNullOrWhiteSpace(itemId) && _items.Remove(itemId);
 
     /// <summary>
     /// Returns whether the specified item is in the inventory.
     /// </summary>
     /// <param name="itemId">The unique identifier of the item to check.</param>
-    public bool HasItem(string itemId) =>
+    public bool HasItem(string? itemId) =>
         !string.IsNullOrWhiteSpace(itemId) && _items.Contains(itemId);
 
     /// <summary>
