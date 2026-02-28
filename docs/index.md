@@ -23,8 +23,7 @@ dotnet build
 dotnet test src/ChagrinFalls.Tests
 
 # Serve docs locally
-pip install -r requirements.txt
-mkdocs serve
+uv run mkdocs serve
 ```
 
 ## Key concepts
