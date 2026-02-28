@@ -66,7 +66,7 @@ public class StorybookLoaderTests : IDisposable
     }
 
     [Fact]
-    public void LoadFile_Throws_WhenJsonDeservesToNull()
+    public void LoadFile_Throws_WhenJsonDeserializesToNull()
     {
         var path = WriteJson("null.json", "null");
         Assert.Throws<JsonException>(() => _loader.LoadFile(path));
