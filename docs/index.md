@@ -28,6 +28,7 @@ uv run mkdocs serve
 
 ## Key concepts
 
+- **[Storybook Loader](systems/storybook-loader.md)** — loads self-contained storylines from JSON files on disk and presents them on the selection screen
 - **[Dialogue Manager](systems/dialogue-manager.md)** — drives conversation flow, condition evaluation, and player choices
 - **[Location Manager](systems/location-manager.md)** — tracks the current location, travel between locations, and item pickup from points of interest
 - **[Player Inventory](systems/player-inventory.md)** — tracks items the player carries

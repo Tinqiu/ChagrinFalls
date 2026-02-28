@@ -5,237 +5,96 @@ using Godot;
 namespace ChagrinFalls.Godot.Scripts;
 
 /// <summary>
-/// Root scene script. Bootstraps game state and the location system,
-/// then wires up the location screen, dialogue UI, and inventory screen.
+/// Root scene script. Loads storybooks from disk, presents the selection screen,
+/// then bootstraps game state and the location system when one is chosen.
 /// </summary>
 public partial class Main : Control
 {
-    private DialogueUI       _dialogueUI      = null!;
-    private InventoryScreen  _inventoryScreen = null!;
-    private LocationScreen   _locationScreen  = null!;
-    private TravelScreen     _travelScreen    = null!;
+    private DialogueUI              _dialogueUI             = null!;
+    private InventoryScreen         _inventoryScreen        = null!;
+    private LocationScreen          _locationScreen         = null!;
+    private TravelScreen            _travelScreen           = null!;
+    private StorybookSelectScreen   _storybookSelectScreen  = null!;
 
-    private GameState        _gameState        = null!;
-    private LocationManager  _locationManager  = null!;
+    private GameState?       _gameState;
+    private LocationManager? _locationManager;
+    private Storybook?       _activeStorybook;
 
-    // Conversation events keyed by ID so the location screen can look them up.
-    private Dictionary<string, ConversationEvent> _conversationEvents = new();
+    private IReadOnlyDictionary<string, Storybook> _storybooks = new Dictionary<string, Storybook>();
 
     public override void _Ready()
     {
-        _dialogueUI      = GetNode<DialogueUI>("DialogueUI");
-        _inventoryScreen = GetNode<InventoryScreen>("InventoryScreen");
-        _locationScreen  = GetNode<LocationScreen>("LocationScreen");
-        _travelScreen    = GetNode<TravelScreen>("TravelScreen");
+        _dialogueUI            = GetNode<DialogueUI>("DialogueUI");
+        _inventoryScreen       = GetNode<InventoryScreen>("InventoryScreen");
+        _locationScreen        = GetNode<LocationScreen>("LocationScreen");
+        _travelScreen          = GetNode<TravelScreen>("TravelScreen");
+        _storybookSelectScreen = GetNode<StorybookSelectScreen>("StorybookSelectScreen");
 
         var menuBar = GetNode<MenuBar>("MenuBar");
         menuBar.BackpackPressed += OnBackpackPressed;
         menuBar.TravelPressed   += OnTravelPressed;
 
-        _gameState = new GameState();
+        _dialogueUI.ConversationFinished += OnConversationFinished;
+        _locationScreen.CharacterInteracted += OnCharacterInteracted;
+        _storybookSelectScreen.StorybookSelected += OnStorybookSelected;
 
-        _conversationEvents = BuildConversationEvents();
-        _locationManager    = BuildLocationManager();
+        LoadStorybooks();
+        _storybookSelectScreen.Populate(_storybooks.Values.ToList());
+    }
+
+    // ── Storybook loading ─────────────────────────────────────────────────────
+
+    private void LoadStorybooks()
+    {
+        var storybooksDir = System.IO.Path.Combine(
+            ProjectSettings.GlobalizePath("res://"), "Storybooks");
+
+        var loader = new StorybookLoader();
+        var loaded = loader.LoadAll(storybooksDir, (file, ex) =>
+            GD.PrintErr($"Failed to load storybook '{file}': {ex.Message}"));
+
+        _storybooks = loaded.ToDictionary(s => s.Id);
+    }
+
+    // ── Game initialisation ───────────────────────────────────────────────────
+
+    private void OnStorybookSelected(string storybookId)
+    {
+        if (!_storybooks.TryGetValue(storybookId, out var storybook))
+        {
+            GD.PrintErr($"Selected storybook '{storybookId}' not found.");
+            return;
+        }
+
+        _gameState       = new GameState();
+        _activeStorybook = storybook;
+
+        _locationManager = new LocationManager(
+            _gameState,
+            storybook.Locations.Values,
+            storybook.StartingLocationId);
 
         _locationScreen.Initialise(_locationManager);
-        _locationScreen.CharacterInteracted += OnCharacterInteracted;
-
-        _dialogueUI.ConversationFinished += OnConversationFinished;
-    }
-
-    // ── World building ────────────────────────────────────────────────────────
-
-    private Dictionary<string, ConversationEvent> BuildConversationEvents()
-    {
-        var evt = BuildMargeryConversationEvent();
-        return new Dictionary<string, ConversationEvent>
-        {
-            [evt.Id] = evt
-        };
-    }
-
-    private LocationManager BuildLocationManager()
-    {
-        var margerysHouse = new Location
-        {
-            Id   = "margerys_house",
-            Name = "Margery's House",
-            PointsOfInterest = new List<PointOfInterest>
-            {
-                new()
-                {
-                    Id                 = "margery",
-                    Name               = "Margery",
-                    Type               = PointOfInterestType.Character,
-                    ConversationEventId = "event_margery",
-                }
-            }
-        };
-
-        var hutByWaterfall = new Location
-        {
-            Id   = "hut_by_waterfall",
-            Name = "Hut by the Waterfall",
-            PointsOfInterest = new List<PointOfInterest>
-            {
-                new()
-                {
-                    Id     = "torn_letter_poi",
-                    Name   = "Torn Letter",
-                    Type   = PointOfInterestType.Item,
-                    ItemId = "torn_letter",
-                }
-            }
-        };
-
-        return new LocationManager(
-            _gameState,
-            [margerysHouse, hutByWaterfall],
-            startingLocationId: "margerys_house");
-    }
-
-    /// <summary>
-    /// Margery conversation:
-    ///   Detective greets Margery
-    ///     → "Do you know about the spooky shack?" → Margery denies it
-    ///           → "Ah that's unfortunate."              → loops back to greeting
-    ///           → [torn letter] "This letter begs to differ!" → Margery confesses → end
-    ///     → "I have nothing else to ask, goodbye."  → end
-    /// </summary>
-    private static ConversationEvent BuildMargeryConversationEvent()
-    {
-        // ── End ──────────────────────────────────────────────────────────────
-        var lineEndArrest = new DialogueLine
-        {
-            Id      = "line_end_arrest",
-            Speaker = "Detective Moore",
-            Text    = "You're under arrest, old bag. You're coming with me.",
-        };
-
-        var lineEndGoodbye = new DialogueLine
-        {
-            Id      = "line_end_goodbye",
-            Speaker = "Detective Moore",
-            Text    = "I'll be in touch, Margery.",
-        };
-
-        // ── Confrontation branch ─────────────────────────────────────────────
-        var lineMargeryConfesses = new DialogueLine
-        {
-            Id                 = "line_margery_confesses",
-            Speaker            = "Margery",
-            Text               = "Blast it, you got me!",
-            NextDialogueLineId = "line_end_arrest",
-        };
-
-        var lineLetterAccuse = new DialogueLine
-        {
-            Id      = "line_letter_accuse",
-            Speaker = "Detective Moore",
-            Text    = "This letter with your signature on it begs to differ!",
-            NextDialogueLineId = "line_margery_confesses",
-        };
-
-        // ── Denial branch ────────────────────────────────────────────────────
-        var lineMargeryDenies = new DialogueLine
-        {
-            Id      = "line_margery_denies",
-            Speaker = "Margery",
-            Text    = "I have no idea what you're talking about. I don't know anything about a spooky shack in the woods.",
-            Choices = new List<Choice>
-            {
-                new()
-                {
-                    Id                 = "choice_unfortunate",
-                    Text               = "Ah, that's unfortunate.",
-                    NextDialogueLineId = "line_greeting",   // loops back
-                },
-                new()
-                {
-                    Id                 = "choice_torn_letter",
-                    Text               = "[Torn Letter] This letter with your signature on it begs to differ!",
-                    NextDialogueLineId = "line_letter_accuse",
-                    Conditions = new List<Condition>
-                    {
-                        new()
-                        {
-                            ConditionType = "ItemInInventory",
-                            Parameters    = new Dictionary<string, string> { ["itemId"] = "torn_letter" }
-                        }
-                    }
-                },
-            }
-        };
-
-        // ── Greeting ─────────────────────────────────────────────────────────
-        var lineGreeting = new DialogueLine
-        {
-            Id                 = "line_greeting",
-            Speaker            = "Detective Moore",
-            Text               = "Good evening, Margery. I'm Detective Moore — I'm investigating some strange goings-on around Chagrin Falls.",
-            NextDialogueLineId = "line_greeting_2",
-        };
-
-        var lineGreeting2 = new DialogueLine
-        {
-            Id      = "line_greeting_2",
-            Speaker = "Margery",
-            Text    = "Detective. What can I do for you?",
-            Choices = new List<Choice>
-            {
-                new()
-                {
-                    Id                 = "choice_shack",
-                    Text               = "Do you know anything about the spooky shack in the woods?",
-                    NextDialogueLineId = "line_margery_denies",
-                },
-                new()
-                {
-                    Id                 = "choice_goodbye",
-                    Text               = "I have nothing else to ask. Goodbye.",
-                    NextDialogueLineId = "line_end_goodbye",
-                },
-            }
-        };
-
-        var conversation = new Conversation
-        {
-            Id                     = "conv_margery",
-            StartingDialogueLineId = "line_greeting",
-            DialogueLines = new Dictionary<string, DialogueLine>
-            {
-                [lineGreeting.Id]          = lineGreeting,
-                [lineGreeting2.Id]         = lineGreeting2,
-                [lineMargeryDenies.Id]     = lineMargeryDenies,
-                [lineLetterAccuse.Id]      = lineLetterAccuse,
-                [lineMargeryConfesses.Id]  = lineMargeryConfesses,
-                [lineEndArrest.Id]         = lineEndArrest,
-                [lineEndGoodbye.Id]        = lineEndGoodbye,
-            }
-        };
-
-        return new ConversationEvent
-        {
-            Id                     = "event_margery",
-            StartingConversationId = "conv_margery",
-            Conversations = new Dictionary<string, Conversation>
-            {
-                [conversation.Id] = conversation
-            }
-        };
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
     private void OnCharacterInteracted(string poiId)
     {
+        if (_locationManager is null || _gameState is null || _activeStorybook is null) return;
+
         var poi = _locationManager.CurrentLocation.PointsOfInterest
             .FirstOrDefault(p => string.Equals(p.Id, poiId, StringComparison.OrdinalIgnoreCase));
 
-        if (poi?.ConversationEventId is null ||
-            !_conversationEvents.TryGetValue(poi.ConversationEventId, out var evt))
+        if (poi?.ConversationEventId is null)
         {
-            GD.PrintErr($"No conversation event found for POI '{poiId}'.");
+            GD.PrintErr($"No conversation event ID on POI '{poiId}'.");
+            return;
+        }
+
+        if (!_activeStorybook.ConversationEvents.TryGetValue(poi.ConversationEventId, out var evt))
+        {
+            GD.PrintErr($"No conversation event found for ID '{poi.ConversationEventId}'.");
             return;
         }
 
@@ -250,11 +109,13 @@ public partial class Main : Control
 
     private void OnBackpackPressed()
     {
+        if (_gameState is null) return;
         _inventoryScreen.Open(_gameState.Inventory);
     }
 
     private void OnTravelPressed()
     {
+        if (_locationManager is null) return;
         _travelScreen.Open(_locationManager);
     }
 }
