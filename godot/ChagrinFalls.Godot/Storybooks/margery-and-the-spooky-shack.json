@@ -1,0 +1,132 @@
+﻿{
+  "id": "margery-and-the-spooky-shack",
+  "title": "Margery and the Spooky Shack",
+  "description": "Strange goings-on around Chagrin Falls lead Detective Moore to question the locals — starting with Margery.",
+  "startingLocationId": "margerys_house",
+  "locations": {
+    "margerys_house": {
+      "id": "margerys_house",
+      "name": "Margery's House",
+      "pointsOfInterest": [
+        {
+          "id": "margery",
+          "name": "Margery",
+          "type": "character",
+          "conversationEventId": "event_margery"
+        }
+      ]
+    },
+    "hut_by_waterfall": {
+      "id": "hut_by_waterfall",
+      "name": "Hut by the Waterfall",
+      "pointsOfInterest": [
+        {
+          "id": "torn_letter_poi",
+          "name": "Torn Letter",
+          "type": "item",
+          "itemId": "torn_letter"
+        }
+      ]
+    }
+  },
+  "conversationEvents": {
+    "event_margery": {
+      "id": "event_margery",
+      "conditions": [],
+      "participants": [],
+      "startingConversationId": "conv_margery",
+      "conversations": {
+        "conv_margery": {
+          "id": "conv_margery",
+          "startingDialogueLineId": "line_greeting",
+          "dialogueLines": {
+            "line_greeting": {
+              "id": "line_greeting",
+              "speaker": "Detective Moore",
+              "text": "Good evening, Margery. I'm Detective Moore — I'm investigating some strange goings-on around Chagrin Falls.",
+              "conditions": [],
+              "choices": [],
+              "nextDialogueLineId": "line_greeting_2"
+            },
+            "line_greeting_2": {
+              "id": "line_greeting_2",
+              "speaker": "Margery",
+              "text": "Detective. What can I do for you?",
+              "conditions": [],
+              "choices": [
+                {
+                  "id": "choice_shack",
+                  "text": "Do you know anything about the spooky shack in the woods?",
+                  "conditions": [],
+                  "nextDialogueLineId": "line_margery_denies"
+                },
+                {
+                  "id": "choice_goodbye",
+                  "text": "I have nothing else to ask. Goodbye.",
+                  "conditions": [],
+                  "nextDialogueLineId": "line_end_goodbye"
+                }
+              ]
+            },
+            "line_margery_denies": {
+              "id": "line_margery_denies",
+              "speaker": "Margery",
+              "text": "I have no idea what you're talking about. I don't know anything about a spooky shack in the woods.",
+              "conditions": [],
+              "choices": [
+                {
+                  "id": "choice_unfortunate",
+                  "text": "Ah, that's unfortunate.",
+                  "conditions": [],
+                  "nextDialogueLineId": "line_greeting"
+                },
+                {
+                  "id": "choice_torn_letter",
+                  "text": "[Torn Letter] This letter with your signature on it begs to differ!",
+                  "conditions": [
+                    {
+                      "conditionType": "ItemInInventory",
+                      "parameters": { "itemId": "torn_letter" }
+                    }
+                  ],
+                  "nextDialogueLineId": "line_letter_accuse"
+                }
+              ]
+            },
+            "line_letter_accuse": {
+              "id": "line_letter_accuse",
+              "speaker": "Detective Moore",
+              "text": "This letter with your signature on it begs to differ!",
+              "conditions": [],
+              "choices": [],
+              "nextDialogueLineId": "line_margery_confesses"
+            },
+            "line_margery_confesses": {
+              "id": "line_margery_confesses",
+              "speaker": "Margery",
+              "text": "Blast it, you got me!",
+              "conditions": [],
+              "choices": [],
+              "nextDialogueLineId": "line_end_arrest"
+            },
+            "line_end_arrest": {
+              "id": "line_end_arrest",
+              "speaker": "Detective Moore",
+              "text": "You're under arrest, old bag. You're coming with me.",
+              "conditions": [],
+              "choices": []
+            },
+            "line_end_goodbye": {
+              "id": "line_end_goodbye",
+              "speaker": "Detective Moore",
+              "text": "I'll be in touch, Margery.",
+              "conditions": [],
+              "choices": []
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

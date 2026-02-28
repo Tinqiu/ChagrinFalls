@@ -36,6 +36,7 @@ plugins:
 nav:
   - Home: index.md
   - Systems:
+    - Storybook Loader: systems/storybook-loader.md
     - Dialogue Manager: systems/dialogue-manager.md
     - Location Manager: systems/location-manager.md
     - Player Inventory: systems/player-inventory.md
@@ -44,5 +45,6 @@ nav:
   - Godot:
     - Overview: godot/overview.md
   - How-Tos:
+    - Add a Storybook: how-tos/add-a-storybook.md
     - Add a Conversation: how-tos/add-a-conversation.md
 
