@@ -92,14 +92,15 @@ public class DialogueManager
     }
 
     /// <summary>
-    /// Advances the conversation to the next dialogue line when no choices are present.
-    /// If the current line has choices, use <see cref="SelectChoice"/> instead.
+    /// Advances the conversation to the next dialogue line when no available choices are present.
+    /// If the current line has at least one available (condition-satisfied) choice, use
+    /// <see cref="SelectChoice"/> instead.
     /// </summary>
     public void Advance()
     {
         if (_currentLine == null) return;
 
-        if (_currentLine.Choices.Count > 0)
+        if (AvailableChoices.Count > 0)
             return; // Player must select a choice.
 
         NavigateToLine(_currentLine.NextDialogueLineId);
@@ -160,8 +161,17 @@ public class DialogueManager
         }
 
         // Skip lines whose conditions are not met, following their NextDialogueLineId chain.
+        // Track visited IDs to break out of any cycle formed by gated lines.
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         while (nextLine != null && !AllConditionsMet(nextLine.Conditions))
         {
+            if (!visited.Add(nextLine.Id))
+            {
+                // Cycle detected among condition-gated lines — end the conversation.
+                EndConversation();
+                return;
+            }
+
             var skippedId = nextLine.NextDialogueLineId;
             nextLine = skippedId != null &&
                        _currentConversation.DialogueLines.TryGetValue(skippedId, out var skipped)

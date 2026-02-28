@@ -172,6 +172,73 @@ public class DialogueManagerTests
         Assert.Equal(2, manager.AvailableChoices.Count);
     }
 
+    [Fact]
+    public void Advance_ProgressesNormally_WhenAllChoicesAreGatedOut()
+    {
+        var manager = CreateManager(); // no items in inventory — all choices will be hidden
+
+        // Build a line that has two condition-gated choices (both unmet) plus a NextDialogueLineId.
+        var lineNext = new DialogueLine { Id = "line_next", Speaker = "NPC", Text = "You moved on." };
+
+        var lineWithChoices = new DialogueLine
+        {
+            Id                 = "line_choices",
+            Speaker            = "NPC",
+            Text               = "A question with hidden choices.",
+            NextDialogueLineId = "line_next",
+            Choices = new List<Choice>
+            {
+                new()
+                {
+                    Id                 = "choice_a",
+                    Text               = "Option A (hidden)",
+                    NextDialogueLineId = "line_next",
+                    Conditions = new List<Condition>
+                    {
+                        new() { ConditionType = "ItemInInventory", Parameters = new Dictionary<string, string> { ["itemId"] = "rare_gem" } }
+                    }
+                },
+                new()
+                {
+                    Id                 = "choice_b",
+                    Text               = "Option B (hidden)",
+                    NextDialogueLineId = "line_next",
+                    Conditions = new List<Condition>
+                    {
+                        new() { ConditionType = "ItemInInventory", Parameters = new Dictionary<string, string> { ["itemId"] = "magic_key" } }
+                    }
+                }
+            }
+        };
+
+        var conversation = new Conversation
+        {
+            Id                     = "conv_1",
+            StartingDialogueLineId = "line_choices",
+            DialogueLines = new Dictionary<string, DialogueLine>
+            {
+                [lineWithChoices.Id] = lineWithChoices,
+                [lineNext.Id]        = lineNext
+            }
+        };
+
+        var evt = new ConversationEvent
+        {
+            Id                     = "gated_choices_event",
+            StartingConversationId = "conv_1",
+            Conversations = new Dictionary<string, Conversation> { [conversation.Id] = conversation }
+        };
+
+        manager.StartEvent(evt);
+
+        // All choices are hidden — AvailableChoices should be empty.
+        Assert.Empty(manager.AvailableChoices);
+
+        // Advance() should not be blocked and should move to the next line.
+        manager.Advance();
+        Assert.Equal("line_next", manager.CurrentLine!.Id);
+    }
+
     // ── Condition-gated dialogue lines ────────────────────────────────────────
 
     [Fact]
@@ -229,7 +296,72 @@ public class DialogueManagerTests
         Assert.Equal("line_3", manager.CurrentLine!.Id);
     }
 
-    // ── Events ────────────────────────────────────────────────────────────────
+    // ── Cycle detection ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void NavigateToLine_EndsConversation_WhenGatedLinesCycleInfinitely()
+    {
+        var manager = CreateManager(); // no items — all conditions unmet
+
+        // line_a (gated) → line_b (gated) → line_a (cycle)
+        var lineA = new DialogueLine
+        {
+            Id                 = "line_a",
+            Speaker            = "NPC",
+            Text               = "Gated A.",
+            NextDialogueLineId = "line_b",
+            Conditions = new List<Condition>
+            {
+                new() { ConditionType = "ItemInInventory", Parameters = new Dictionary<string, string> { ["itemId"] = "magic_key" } }
+            }
+        };
+        var lineB = new DialogueLine
+        {
+            Id                 = "line_b",
+            Speaker            = "NPC",
+            Text               = "Gated B.",
+            NextDialogueLineId = "line_a",  // creates the cycle
+            Conditions = new List<Condition>
+            {
+                new() { ConditionType = "ItemInInventory", Parameters = new Dictionary<string, string> { ["itemId"] = "magic_key" } }
+            }
+        };
+        var lineStart = new DialogueLine
+        {
+            Id                 = "line_start",
+            Speaker            = "NPC",
+            Text               = "Start.",
+            NextDialogueLineId = "line_a"
+        };
+
+        var conversation = new Conversation
+        {
+            Id                     = "conv_1",
+            StartingDialogueLineId = "line_start",
+            DialogueLines = new Dictionary<string, DialogueLine>
+            {
+                [lineStart.Id] = lineStart,
+                [lineA.Id]     = lineA,
+                [lineB.Id]     = lineB
+            }
+        };
+
+        var evt = new ConversationEvent
+        {
+            Id                     = "cycle_event",
+            StartingConversationId = "conv_1",
+            Conversations = new Dictionary<string, Conversation> { [conversation.Id] = conversation }
+        };
+
+        var ended = false;
+        manager.OnConversationEnded += () => ended = true;
+
+        manager.StartEvent(evt);
+        manager.Advance(); // navigates into the cycle — should detect and end
+
+        Assert.True(ended);
+        Assert.False(manager.IsConversationActive);
+    }
 
     [Fact]
     public void OnDialogueLineChanged_FiredWhenLineChanges()

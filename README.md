@@ -87,8 +87,8 @@ manager.StartEvent(myConversationEvent);
 manager.Advance();
 
 // Or pick a choice when choices are present:
-foreach (var choice in manager.AvailableChoices)
-    Console.WriteLine($"  [{manager.AvailableChoices.IndexOf(choice)}] {choice.Text}");
+for (int i = 0; i < manager.AvailableChoices.Count; i++)
+    Console.WriteLine($"  [{i}] {manager.AvailableChoices[i].Text}");
 manager.SelectChoice(0);
 ```
 
