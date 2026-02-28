@@ -23,6 +23,7 @@ window/size/viewport_height=720
 window/size/resizable=true
 window/size/min_width=640
 window/size/min_height=360
+window/size/mode=0
 window/stretch/mode="disabled"
 
 [dotnet]
