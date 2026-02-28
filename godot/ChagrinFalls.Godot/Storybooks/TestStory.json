@@ -1,0 +1,228 @@
+{
+  "id": "TestStory",
+  "title": "Test Storybook",
+  "description": "This is testing the storybook editor.",
+  "startingLocationId": "new_location",
+  "locations": {
+    "new_location": {
+      "id": "new_location",
+      "name": "Cop Station",
+      "pointsOfInterest": [
+        {
+          "id": "new_character",
+          "name": "John Donut",
+          "type": "character",
+          "characterId": "new_character",
+          "conversationEventId": "john_donut_intro",
+          "itemId": null
+        }
+      ]
+    },
+    "donut_shop": {
+      "id": "donut_shop",
+      "name": "Donut Shop",
+      "pointsOfInterest": [
+        {
+          "id": "new_character",
+          "name": "Donut Shop Worker",
+          "type": "character",
+          "characterId": "donut_shop_worker",
+          "conversationEventId": "donut_shop_purchase",
+          "itemId": null
+        }
+      ]
+    }
+  },
+  "characters": {
+    "new_character": {
+      "id": "new_character",
+      "name": "John Donut",
+      "description": "He likes them donuts."
+    },
+    "donut_shop_worker": {
+      "id": "donut_shop_worker",
+      "name": "Donut Shop Worker",
+      "description": "He sells donuts."
+    }
+  },
+  "items": {
+    "donut": {
+      "id": "donut",
+      "name": "Donut",
+      "description": "Nicely glazed donut."
+    }
+  },
+  "conversationEvents": {
+    "john_donut_intro": {
+      "id": "john_donut_intro",
+      "conditions": [],
+      "participants": [],
+      "conversations": {
+        "intro": {
+          "id": "intro",
+          "dialogueLines": {
+            "npc_line": {
+              "id": "npc_line",
+              "speaker": "John Donut",
+              "text": "What do you want?",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": "npc_line_2"
+            },
+            "npc_line_2": {
+              "id": "npc_line_2",
+              "speaker": "NPC",
+              "text": "Hi I\u0027m Detective Moore.",
+              "conditions": [],
+              "choices": [
+                {
+                  "id": "choice",
+                  "text": "Sorry to bother you, I\u0027ll come back later.",
+                  "conditions": [],
+                  "nextDialogueLineId": null
+                },
+                {
+                  "id": "choice_2",
+                  "text": "Would this donut help improve your mood?",
+                  "conditions": [
+                    {
+                      "conditionType": "ItemInInventory",
+                      "parameters": {
+                        "itemId": "donut",
+                        "negate": "false"
+                      }
+                    }
+                  ],
+                  "nextDialogueLineId": "npc_line_3"
+                }
+              ],
+              "effects": [],
+              "nextDialogueLineId": null
+            },
+            "npc_line_3": {
+              "id": "npc_line_3",
+              "speaker": "John Donut",
+              "text": "Oh man that\u0027s my favorite donut, ok fine give it over and I\u0027ll answer your questions.",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": "npc_line_4"
+            },
+            "npc_line_4": {
+              "id": "npc_line_4",
+              "speaker": "NPC",
+              "text": "Great thanks, here you go!",
+              "conditions": [],
+              "choices": [],
+              "effects": [
+                {
+                  "effectType": "RemoveItem",
+                  "parameters": {
+                    "itemId": "donut"
+                  }
+                }
+              ],
+              "nextDialogueLineId": "npc_line_5"
+            },
+            "npc_line_5": {
+              "id": "npc_line_5",
+              "speaker": "NPC",
+              "text": "*What do you ask Officer John Donut?*",
+              "conditions": [],
+              "choices": [
+                {
+                  "id": "choice",
+                  "text": "Who\u0027s Billy Bob?",
+                  "conditions": [],
+                  "nextDialogueLineId": "npc_line_6"
+                },
+                {
+                  "id": "choice_2",
+                  "text": "I\u0027ve got all the information I need, thanks.",
+                  "conditions": [],
+                  "nextDialogueLineId": null
+                }
+              ],
+              "effects": [],
+              "nextDialogueLineId": null
+            },
+            "npc_line_6": {
+              "id": "npc_line_6",
+              "speaker": "John Donut",
+              "text": "Billy Bob is the guy that runs that goat farm up the road, get it? \u0022Billy\u0022 Bob?",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": "npc_line_7"
+            },
+            "npc_line_7": {
+              "id": "npc_line_7",
+              "speaker": "NPC",
+              "text": "*groans*",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": null
+            }
+          },
+          "startingDialogueLineId": "npc_line"
+        },
+        "new_conv": {
+          "id": "new_conv",
+          "dialogueLines": {},
+          "startingDialogueLineId": ""
+        }
+      },
+      "startingConversationId": "intro"
+    },
+    "donut_shop_purchase": {
+      "id": "donut_shop_purchase",
+      "conditions": [],
+      "participants": [],
+      "conversations": {
+        "intro": {
+          "id": "intro",
+          "dialogueLines": {
+            "npc_line": {
+              "id": "npc_line",
+              "speaker": "Donut Shop Worker",
+              "text": "Hi there! What can I get ya?",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": "npc_line_2"
+            },
+            "npc_line_2": {
+              "id": "npc_line_2",
+              "speaker": "NPC",
+              "text": "I would like one donut please!",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "nextDialogueLineId": "npc_line_3"
+            },
+            "npc_line_3": {
+              "id": "npc_line_3",
+              "speaker": "Donut Shop Worker",
+              "text": "Sure thing, it\u0027s on the house today. Enjoy!",
+              "conditions": [],
+              "choices": [],
+              "effects": [
+                {
+                  "effectType": "AddItem",
+                  "parameters": {
+                    "itemId": "donut"
+                  }
+                }
+              ],
+              "nextDialogueLineId": null
+            }
+          },
+          "startingDialogueLineId": "npc_line"
+        }
+      },
+      "startingConversationId": "intro"
+    }
+  }
+}

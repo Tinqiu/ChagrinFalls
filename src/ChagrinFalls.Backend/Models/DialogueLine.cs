@@ -33,6 +33,11 @@ public class DialogueLine
     public List<Choice> Choices { get; set; } = new();
 
     /// <summary>
+    /// Effects applied when the player advances past this line (via Advance or SelectChoice).
+    /// </summary>
+    public List<ConversationEffect> Effects { get; set; } = new();
+
+    /// <summary>
     /// The ID of the next dialogue line to display when no choices are available after condition filtering.
     /// Null indicates the conversation ends after this line.
     /// </summary>

@@ -16,6 +16,9 @@ public class ItemInInventoryEvaluator : IConditionEvaluator
         if (!condition.Parameters.TryGetValue("itemId", out var itemId))
             return false;
 
-        return gameState.Inventory.HasItem(itemId);
+        var hasItem = gameState.Inventory.HasItem(itemId);
+        var negate  = condition.Parameters.TryGetValue("negate", out var negVal)
+                      && negVal.Equals("true", StringComparison.OrdinalIgnoreCase);
+        return negate ? !hasItem : hasItem;
     }
 }

@@ -3,6 +3,9 @@
     <Project Path="godot/ChagrinFalls.Godot/ChagrinFalls.Godot.csproj">
       <BuildType Project="Debug" />
     </Project>
+    <Project Path="godot/ChagrinFalls.StoryEditor/ChagrinFalls.StoryEditor.csproj">
+      <BuildType Project="Debug" />
+    </Project>
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/ChagrinFalls.Backend/ChagrinFalls.Backend.csproj" />

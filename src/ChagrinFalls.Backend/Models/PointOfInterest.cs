@@ -23,13 +23,19 @@ public class PointOfInterest
 
     /// <summary>
     /// For <see cref="PointOfInterestType.Character"/> POIs: the ID of the
+    /// <see cref="Character"/> this POI represents.
+    /// </summary>
+    public string? CharacterId { get; set; }
+
+    /// <summary>
+    /// For <see cref="PointOfInterestType.Character"/> POIs: the ID of the
     /// <see cref="ConversationEvent"/> to start when the player interacts.
     /// </summary>
     public string? ConversationEventId { get; set; }
 
     /// <summary>
-    /// For <see cref="PointOfInterestType.Item"/> POIs: the item ID that will
-    /// be added to the player's inventory when picked up.
+    /// For <see cref="PointOfInterestType.Item"/> POIs: the ID of the
+    /// <see cref="Item"/> this POI represents. Used as the inventory item ID.
     /// </summary>
     public string? ItemId { get; set; }
 }

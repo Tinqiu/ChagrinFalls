@@ -86,15 +86,27 @@ public partial class Main : Control
         var poi = _locationManager.CurrentLocation.PointsOfInterest
             .FirstOrDefault(p => string.Equals(p.Id, poiId, StringComparison.OrdinalIgnoreCase));
 
-        if (poi?.ConversationEventId is null)
+        if (poi is null)
         {
-            GD.PrintErr($"No conversation event ID on POI '{poiId}'.");
+            GD.PrintErr($"POI '{poiId}' not found in current location.");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(poi.ConversationEventId))
+        {
+            GD.PrintErr($"POI '{poiId}' ({poi.Name}) has no conversation event assigned.");
+            _dialogueUI.ShowMessage(
+                poi.Name,
+                $"{poi.Name} doesn't seem to want to talk right now.");
             return;
         }
 
         if (!_activeStorybook.ConversationEvents.TryGetValue(poi.ConversationEventId, out var evt))
         {
-            GD.PrintErr($"No conversation event found for ID '{poi.ConversationEventId}'.");
+            GD.PrintErr($"Conversation event '{poi.ConversationEventId}' not found in storybook.");
+            _dialogueUI.ShowMessage(
+                poi.Name,
+                $"(Missing conversation event '{poi.ConversationEventId}')");
             return;
         }
 
