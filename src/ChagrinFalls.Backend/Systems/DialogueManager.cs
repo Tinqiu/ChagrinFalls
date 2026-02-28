@@ -1,4 +1,5 @@
 using ChagrinFalls.Backend.Conditions;
+using ChagrinFalls.Backend.Effects;
 using ChagrinFalls.Backend.Models;
 
 
@@ -11,6 +12,7 @@ namespace ChagrinFalls.Backend.Systems;
 public class DialogueManager
 {
     private readonly Dictionary<string, IConditionEvaluator> _evaluators;
+    private readonly Dictionary<string, IEffectHandler> _effectHandlers;
     private readonly GameState _gameState;
 
     private ConversationEvent? _currentEvent;
@@ -46,6 +48,10 @@ public class DialogueManager
             foreach (var evaluator in evaluators)
                 RegisterEvaluator(evaluator);
         }
+
+        _effectHandlers = new Dictionary<string, IEffectHandler>(StringComparer.OrdinalIgnoreCase);
+        RegisterHandler(new AddItemEffectHandler());
+        RegisterHandler(new RemoveItemEffectHandler());
     }
 
     /// <summary>
@@ -103,7 +109,11 @@ public class DialogueManager
         if (AvailableChoices.Count > 0)
             return; // Player must select a choice.
 
-        NavigateToLine(_currentLine.NextDialogueLineId);
+        ApplyEffects(_currentLine.Effects);
+
+        // Evaluate conditional branches in order; first match wins.
+        var branch = _currentLine.Branches.FirstOrDefault(b => AllConditionsMet(b.Conditions));
+        NavigateToLine(branch != null ? branch.NextDialogueLineId : _currentLine.NextDialogueLineId);
     }
 
     /// <summary>
@@ -119,6 +129,7 @@ public class DialogueManager
             throw new ArgumentOutOfRangeException(nameof(choiceIndex),
                 $"Choice index {choiceIndex} is out of range. There are {choices.Count} available choices.");
 
+        ApplyEffects(_currentLine!.Effects);
         NavigateToLine(choices[choiceIndex].NextDialogueLineId);
     }
 
@@ -129,6 +140,15 @@ public class DialogueManager
     {
         ArgumentNullException.ThrowIfNull(evaluator);
         _evaluators[evaluator.ConditionType] = evaluator;
+    }
+
+    /// <summary>
+    /// Registers or replaces an effect handler for its declared <see cref="IEffectHandler.EffectType"/>.
+    /// </summary>
+    public void RegisterHandler(IEffectHandler handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+        _effectHandlers[handler.EffectType] = handler;
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -200,6 +220,15 @@ public class DialogueManager
         _currentConversation = null;
         _currentEvent = null;
         OnConversationEnded?.Invoke();
+    }
+
+    private void ApplyEffects(IEnumerable<ConversationEffect> effects)
+    {
+        foreach (var effect in effects)
+        {
+            if (_effectHandlers.TryGetValue(effect.EffectType, out var handler))
+                handler.Apply(effect, _gameState);
+        }
     }
 
     private bool AllConditionsMet(IEnumerable<Condition> conditions)

@@ -51,6 +51,29 @@ public partial class DialogueUI : CanvasLayer
         _dialogueManager.StartEvent(conversationEvent);
     }
 
+    /// <summary>
+    /// Shows a single static message with an OK button — used when a character
+    /// has no conversation event assigned.
+    /// </summary>
+    public void ShowMessage(string speaker, string message)
+    {
+        _speakerLabel.Text  = speaker;
+        _dialogueLabel.Text = message;
+        ClearChoices();
+        _advanceButton.Show();
+        _advanceButton.Pressed -= OnAdvancePressed;
+        _advanceButton.Pressed -= CloseMessage;
+        _advanceButton.Pressed += CloseMessage;
+        Show();
+    }
+
+    private void CloseMessage()
+    {
+        _advanceButton.Pressed -= CloseMessage;
+        _advanceButton.Pressed += OnAdvancePressed;
+        Hide();
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private void DisplayLine(DialogueLine line)

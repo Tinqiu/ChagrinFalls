@@ -1,0 +1,35 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="ChagrinFalls.StoryEditor"
+config/description="Storybook authoring tool for Chagrin Falls."
+run/main_scene="res://Scenes/StoryEditorMain.tscn"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+config/icon="res://icon.svg"
+
+[internationalization]
+
+locale/fallback="en_US"
+
+[display]
+
+window/size/viewport_width=1440
+window/size/viewport_height=900
+window/size/resizable=true
+window/size/min_width=1024
+window/size/min_height=640
+window/size/mode=2
+window/stretch/mode="disabled"
+
+[dotnet]
+
+project/assembly_name="ChagrinFalls.StoryEditor"

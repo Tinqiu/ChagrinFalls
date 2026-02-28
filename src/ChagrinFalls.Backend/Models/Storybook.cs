@@ -25,6 +25,12 @@ public class Storybook
     /// <summary>All locations in this storybook, keyed by location ID.</summary>
     public Dictionary<string, Location> Locations { get; set; } = new();
 
+    /// <summary>All characters in this storybook, keyed by character ID.</summary>
+    public Dictionary<string, Character> Characters { get; set; } = new();
+
+    /// <summary>All items in this storybook, keyed by item ID.</summary>
+    public Dictionary<string, Item> Items { get; set; } = new();
+
     /// <summary>All conversation events in this storybook, keyed by event ID.</summary>
     public Dictionary<string, ConversationEvent> ConversationEvents { get; set; } = new();
 }

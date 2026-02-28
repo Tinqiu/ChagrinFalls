@@ -9,6 +9,7 @@ namespace ChagrinFalls.Godot.Scripts;
 /// </summary>
 public partial class StorybookSelectScreen : CanvasLayer
 {
+    private Label _titleLabel = null!;
     private VBoxContainer _storybookList = null!;
 
     [Signal]
@@ -16,6 +17,7 @@ public partial class StorybookSelectScreen : CanvasLayer
 
     public override void _Ready()
     {
+        _titleLabel    = GetNode<Label>("Background/Panel/VBoxContainer/Title");
         _storybookList = GetNode<VBoxContainer>("Background/Panel/VBoxContainer/StorybookList");
     }
 

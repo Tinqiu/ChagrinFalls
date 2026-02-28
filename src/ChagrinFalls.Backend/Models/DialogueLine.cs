@@ -33,8 +33,21 @@ public class DialogueLine
     public List<Choice> Choices { get; set; } = new();
 
     /// <summary>
-    /// The ID of the next dialogue line to display when no choices are available after condition filtering.
-    /// Null indicates the conversation ends after this line.
+    /// Effects applied when the player advances past this line (via Advance or SelectChoice).
+    /// </summary>
+    public List<ConversationEffect> Effects { get; set; } = new();
+
+    /// <summary>
+    /// Conditional branches evaluated (in order) when the player advances past this line
+    /// without selecting a choice. The first branch whose conditions are all met is taken.
+    /// If none match, falls back to <see cref="NextDialogueLineId"/>.
+    /// </summary>
+    public List<ConditionalBranch> Branches { get; set; } = new();
+
+    /// <summary>
+    /// The ID of the next dialogue line to display when no choices are available after condition filtering
+    /// and no <see cref="Branches"/> matched.
+    /// Null indicates the conversation ends.
     /// </summary>
     public string? NextDialogueLineId { get; set; }
 }

@@ -1,0 +1,10 @@
+; Engine-generated .tscn - do not edit manually
+[gd_scene load_steps=2 format=3 uid="uid://Cgw6DIf4Krxom"]
+[ext_resource type="Script" path="res://Scripts/StoryEditorMain.cs" id="1_main"]
+[node name="StoryEditorMain" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+layout_direction = 1
+script = ExtResource("1_main")
