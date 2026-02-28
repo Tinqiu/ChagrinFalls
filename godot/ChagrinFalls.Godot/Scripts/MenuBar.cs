@@ -14,10 +14,14 @@ public partial class MenuBar : CanvasLayer
     [Signal]
     public delegate void JournalPressedEventHandler();
 
+    [Signal]
+    public delegate void TravelPressedEventHandler();
+
     public override void _Ready()
     {
         GetNode<Button>("Panel/VBoxContainer/BackpackButton").Pressed += () => EmitSignal(SignalName.BackpackPressed);
         GetNode<Button>("Panel/VBoxContainer/JournalButton").Pressed  += () => EmitSignal(SignalName.JournalPressed);
+        GetNode<Button>("Panel/VBoxContainer/TravelButton").Pressed   += () => EmitSignal(SignalName.TravelPressed);
     }
 }
 
