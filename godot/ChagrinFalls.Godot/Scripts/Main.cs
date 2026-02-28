@@ -8,16 +8,20 @@ namespace ChagrinFalls.Godot.Scripts;
 /// Root scene script. Bootstraps the game state, builds a sample conversation event,
 /// and wires it up to the <see cref="DialogueUI"/> to demonstrate the dialogue system.
 /// </summary>
-public partial class Main : Node
+public partial class Main : Control
 {
     private DialogueUI _dialogueUI = null!;
+    private InventoryScreen _inventoryScreen = null!;
 
     private GameState _gameState = null!;
 
     public override void _Ready()
     {
-        // Get the DialogueUI child node from the scene tree.
-        _dialogueUI = GetNode<DialogueUI>("DialogueUI");
+        _dialogueUI      = GetNode<DialogueUI>("DialogueUI");
+        _inventoryScreen = GetNode<InventoryScreen>("InventoryScreen");
+
+        var menuBar = GetNode<MenuBar>("MenuBar");
+        menuBar.BackpackPressed += OnBackpackPressed;
 
         _gameState = new GameState();
 
@@ -125,5 +129,10 @@ public partial class Main : Node
     private void OnConversationFinished()
     {
         GD.Print("Conversation finished.");
+    }
+
+    private void OnBackpackPressed()
+    {
+        _inventoryScreen.Open(_gameState.Inventory);
     }
 }

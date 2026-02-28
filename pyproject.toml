@@ -1,0 +1,9 @@
+[project]
+name = "chagrinfalls-docs"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "mkdocs-material>=9.5",
+    "mkdocs-minify-plugin>=0.8",
+]
+
