@@ -283,7 +283,7 @@ public partial class ConversationEventForm : VBoxContainer
         var opDd = new OptionButton { CustomMinimumSize = new Vector2(160, 0) };
         opDd.AddItem("contains");         opDd.SetItemMetadata(0, "false");
         opDd.AddItem("does not contain"); opDd.SetItemMetadata(1, "true");
-        var isNegate = cond.Parameters.TryGetValue("negate", out var negVal) && negVal == "true";
+        var isNegate = cond.Parameters.TryGetValue("negate", out var negVal) && string.Equals(negVal, "true", StringComparison.OrdinalIgnoreCase);
         opDd.Selected = isNegate ? 1 : 0;
 
         var itemKey = cond.ConditionType == "InformationLearned" ? "informationId" : "itemId";
@@ -409,7 +409,7 @@ public partial class ConversationEventForm : VBoxContainer
         var opDd = new OptionButton { CustomMinimumSize = new Vector2(160, 0) };
         opDd.AddItem("contains");         opDd.SetItemMetadata(0, "false");
         opDd.AddItem("does not contain"); opDd.SetItemMetadata(1, "true");
-        var isNegate = cond.Parameters.TryGetValue("negate", out var negVal) && negVal == "true";
+        var isNegate = cond.Parameters.TryGetValue("negate", out var negVal) && string.Equals(negVal, "true", StringComparison.OrdinalIgnoreCase);
         opDd.Selected = isNegate ? 1 : 0;
         var itemKey = cond.ConditionType == "InformationLearned" ? "informationId" : "itemId";
         cond.Parameters.TryGetValue(itemKey, out var currentId);

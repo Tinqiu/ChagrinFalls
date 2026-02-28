@@ -51,6 +51,12 @@ public partial class EditorState : Node
 
     // ── Metadata ──────────────────────────────────────────────────────────────
 
+    public void SetId(string id)
+    {
+        Storybook.Id = id;
+        NotifyChanged();
+    }
+
     public void SetTitle(string title)
     {
         Storybook.Title = title;
@@ -190,7 +196,8 @@ public partial class EditorState : Node
 
     public PointOfInterest AddPointOfInterest(string locationId, string name, PointOfInterestType type)
     {
-        if (!Storybook.Locations.TryGetValue(locationId, out var location)) return null!;
+        if (!Storybook.Locations.TryGetValue(locationId, out var location))
+            throw new ArgumentException($"Location '{locationId}' not found.", nameof(locationId));
         var existing = location.PointsOfInterest.Select(p => p.Id);
         var poi = new PointOfInterest { Id = GenerateId(name, existing), Name = name, Type = type };
         location.PointsOfInterest.Add(poi);

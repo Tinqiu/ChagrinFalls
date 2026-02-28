@@ -6,6 +6,8 @@ namespace ChagrinFalls.Backend.Conditions;
 /// <summary>
 /// Evaluates the <c>ItemInInventory</c> condition.
 /// Requires parameter <c>itemId</c> — the identifier of the item to check for.
+/// Supports optional parameter <c>negate</c> — set to <c>"true"</c> (case-insensitive)
+/// to invert the result (i.e. condition passes when the item is <em>not</em> in the inventory).
 /// </summary>
 public class ItemInInventoryEvaluator : IConditionEvaluator
 {

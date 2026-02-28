@@ -1,6 +1,7 @@
-namespace ChagrinFalls.Backend.Effects;
 using ChagrinFalls.Backend.Models;
 using ChagrinFalls.Backend.Systems;
+
+namespace ChagrinFalls.Backend.Effects;
 /// <summary>
 /// Applies a <see cref="ConversationEffect"/> to the current <see cref="GameState"/>.
 /// </summary>
