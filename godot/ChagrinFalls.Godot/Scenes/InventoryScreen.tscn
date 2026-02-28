@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://UIqzM8b0POlM8"]
+[gd_scene load_steps=3 format=3 uid="uid://inventoryscreen"]
 
 [ext_resource type="Script" path="res://Scripts/InventoryScreen.cs" id="1_inventoryscreen"]
 

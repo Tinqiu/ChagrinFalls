@@ -1,11 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://VDYip8KCwPHUV"]
+[gd_scene load_steps=5 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://8WIQOuoI6O7gD" path="res://Scenes/DialogueUI.tscn" id="2_dialogueui"]
-[ext_resource type="PackedScene" uid="uid://eEWMKpdteYQ4s" path="res://Scenes/MenuBar.tscn" id="3_menubar"]
-[ext_resource type="PackedScene" uid="uid://UIqzM8b0POlM8" path="res://Scenes/InventoryScreen.tscn" id="4_inventoryscreen"]
-[ext_resource type="PackedScene" uid="uid://iHliBIVyAvNwN" path="res://Scenes/LocationScreen.tscn" id="5_locationscreen"]
-[ext_resource type="PackedScene" uid="uid://ouPXHRVKwJVkt" path="res://Scenes/TravelScreen.tscn" id="6_travelscreen"]
+[ext_resource type="PackedScene" uid="uid://dialogueui" path="res://Scenes/DialogueUI.tscn" id="2_dialogueui"]
+[ext_resource type="PackedScene" uid="uid://menubar" path="res://Scenes/MenuBar.tscn" id="3_menubar"]
+[ext_resource type="PackedScene" uid="uid://inventoryscreen" path="res://Scenes/InventoryScreen.tscn" id="4_inventoryscreen"]
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
@@ -23,13 +21,9 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.08, 0.1, 1)
 
-[node name="LocationScreen" parent="." instance=ExtResource("5_locationscreen")]
-
 [node name="DialogueUI" parent="." instance=ExtResource("2_dialogueui")]
 
 [node name="MenuBar" parent="." instance=ExtResource("3_menubar")]
 
 [node name="InventoryScreen" parent="." instance=ExtResource("4_inventoryscreen")]
-
-[node name="TravelScreen" parent="." instance=ExtResource("6_travelscreen")]
 

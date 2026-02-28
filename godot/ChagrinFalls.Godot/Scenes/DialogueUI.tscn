@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://8WIQOuoI6O7gD"]
+[gd_scene load_steps=3 format=3 uid="uid://dialogueui"]
 
 [ext_resource type="Script" path="res://Scripts/DialogueUI.cs" id="1_dialogueui"]
 

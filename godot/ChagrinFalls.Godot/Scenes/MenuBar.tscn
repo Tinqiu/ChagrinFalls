@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://eEWMKpdteYQ4s"]
+[gd_scene load_steps=2 format=3 uid="uid://menubar"]
 
 [ext_resource type="Script" path="res://Scripts/MenuBar.cs" id="1_menubar"]
 
@@ -38,12 +38,6 @@ layout_mode = 2
 custom_minimum_size = Vector2(56, 56)
 text = "🎒"
 tooltip_text = "Backpack"
-
-[node name="TravelButton" type="Button" parent="Panel/VBoxContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-text = "🗺️"
-tooltip_text = "Travel"
 
 
 

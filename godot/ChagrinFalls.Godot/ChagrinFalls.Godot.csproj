@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Content Include="Scripts\InventoryScreen.cs.uid" />
-    <Content Include="Scripts\LocationScreen.cs.uid" />
     <Content Include="Scripts\MenuBar.cs.uid" />
   </ItemGroup>
 </Project>
