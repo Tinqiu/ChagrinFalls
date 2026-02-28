@@ -35,6 +35,13 @@ plugins:
 
 nav:
   - Home: index.md
+  - Storybook Editor:
+    - Overview: storybook-editor/overview.md
+    - Characters & Items: storybook-editor/characters-and-items.md
+    - Locations & Points of Interest: storybook-editor/locations.md
+    - Conversation Events: storybook-editor/conversations.md
+    - Dialogue Lines, Choices & Conditions: storybook-editor/dialogue.md
+    - Effects & Conditional Branching: storybook-editor/effects-and-branches.md
   - Systems:
     - Storybook Loader: systems/storybook-loader.md
     - Dialogue Manager: systems/dialogue-manager.md

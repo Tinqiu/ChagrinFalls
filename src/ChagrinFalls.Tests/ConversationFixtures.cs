@@ -1,6 +1,5 @@
 using ChagrinFalls.Backend.Models;
 
-
 namespace ChagrinFalls.Tests;
 
 /// <summary>
@@ -8,6 +7,118 @@ namespace ChagrinFalls.Tests;
 /// </summary>
 internal static class ConversationFixtures
 {
+    // ...existing code...
+
+    /// <summary>
+    /// Builds an event where line_1 has an AddItem effect for "key",
+    /// then advances to line_2.
+    ///   line_1 [AddItem: key] → line_2 → end
+    /// </summary>
+    public static ConversationEvent EventWithAddItemEffect(string itemId = "key")
+    {
+        var line1 = new DialogueLine
+        {
+            Id     = "line_1",
+            Speaker = "NPC",
+            Text   = "Take this.",
+            NextDialogueLineId = "line_2",
+            Effects = new List<ConversationEffect>
+            {
+                new() { EffectType = "AddItem", Parameters = new Dictionary<string, string> { ["itemId"] = itemId } }
+            }
+        };
+        var line2 = new DialogueLine { Id = "line_2", Speaker = "NPC", Text = "Done." };
+        return BuildSingleConvEvent("effect_event", line1, line2);
+    }
+
+    /// <summary>
+    /// Builds an event where line_1 has a RemoveItem effect for "key",
+    /// then advances to line_2.
+    ///   line_1 [RemoveItem: key] → line_2 → end
+    /// </summary>
+    public static ConversationEvent EventWithRemoveItemEffect(string itemId = "key")
+    {
+        var line1 = new DialogueLine
+        {
+            Id     = "line_1",
+            Speaker = "NPC",
+            Text   = "Give it back.",
+            NextDialogueLineId = "line_2",
+            Effects = new List<ConversationEffect>
+            {
+                new() { EffectType = "RemoveItem", Parameters = new Dictionary<string, string> { ["itemId"] = itemId } }
+            }
+        };
+        var line2 = new DialogueLine { Id = "line_2", Speaker = "NPC", Text = "Thanks." };
+        return BuildSingleConvEvent("remove_effect_event", line1, line2);
+    }
+
+    /// <summary>
+    /// Builds an event where line_1 has two effects: AddItem "sword" then RemoveItem "gold".
+    ///   line_1 [AddItem: sword, RemoveItem: gold] → line_2 → end
+    /// </summary>
+    public static ConversationEvent EventWithMultipleEffects()
+    {
+        var line1 = new DialogueLine
+        {
+            Id     = "line_1",
+            Speaker = "NPC",
+            Text   = "A trade.",
+            NextDialogueLineId = "line_2",
+            Effects = new List<ConversationEffect>
+            {
+                new() { EffectType = "AddItem",    Parameters = new Dictionary<string, string> { ["itemId"] = "sword" } },
+                new() { EffectType = "RemoveItem", Parameters = new Dictionary<string, string> { ["itemId"] = "gold"  } }
+            }
+        };
+        var line2 = new DialogueLine { Id = "line_2", Speaker = "NPC", Text = "Done." };
+        return BuildSingleConvEvent("multi_effect_event", line1, line2);
+    }
+
+    /// <summary>
+    /// Builds an event where line_1 has a choice; the choice triggers an AddItem effect on line_1
+    /// when selected (effect fires before navigation, not after).
+    ///   line_1 [AddItem: key] → choice_a → line_2a
+    /// </summary>
+    public static ConversationEvent EventWithEffectOnChoiceLine(string itemId = "key")
+    {
+        var line2a = new DialogueLine { Id = "line_2a", Speaker = "NPC", Text = "You chose." };
+        var line1 = new DialogueLine
+        {
+            Id     = "line_1",
+            Speaker = "NPC",
+            Text   = "Choose.",
+            Effects = new List<ConversationEffect>
+            {
+                new() { EffectType = "AddItem", Parameters = new Dictionary<string, string> { ["itemId"] = itemId } }
+            },
+            Choices = new List<Choice>
+            {
+                new() { Id = "choice_a", Text = "Pick it up", NextDialogueLineId = "line_2a" }
+            }
+        };
+        return BuildSingleConvEvent("choice_effect_event", line1, line2a);
+    }
+
+    // ── Private builder ───────────────────────────────────────────────────────
+
+    private static ConversationEvent BuildSingleConvEvent(string eventId, params DialogueLine[] lines)
+    {
+        var dict = lines.ToDictionary(l => l.Id);
+        var conv = new Conversation
+        {
+            Id = "conv_1",
+            StartingDialogueLineId = lines[0].Id,
+            DialogueLines = dict
+        };
+        return new ConversationEvent
+        {
+            Id = eventId,
+            StartingConversationId = "conv_1",
+            Conversations = new Dictionary<string, Conversation> { [conv.Id] = conv }
+        };
+    }
+
     /// <summary>
     /// Builds a minimal linear conversation event:
     ///   line_1 ("Hello!") → line_2 ("Goodbye.") → end

@@ -390,6 +390,172 @@ public class DialogueManagerTests
         Assert.True(ended);
     }
 
+    // ── Effect application ────────────────────────────────────────────────────
+
+    [Fact]
+    public void Advance_AppliesAddItemEffect_BeforeMovingToNextLine()
+    {
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithAddItemEffect("key"));
+
+        Assert.False(state.Inventory.HasItem("key"));
+
+        manager.Advance(); // leaves line_1 — effect should fire
+
+        Assert.True(state.Inventory.HasItem("key"));
+        Assert.Equal("line_2", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void Advance_AppliesRemoveItemEffect_BeforeMovingToNextLine()
+    {
+        var state = new GameState();
+        state.Inventory.AddItem("key");
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithRemoveItemEffect("key"));
+
+        Assert.True(state.Inventory.HasItem("key"));
+
+        manager.Advance();
+
+        Assert.False(state.Inventory.HasItem("key"));
+        Assert.Equal("line_2", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void Advance_AppliesMultipleEffectsInOrder()
+    {
+        var state = new GameState();
+        state.Inventory.AddItem("gold");
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithMultipleEffects());
+
+        // Before advance: has gold, no sword
+        Assert.False(state.Inventory.HasItem("sword"));
+        Assert.True(state.Inventory.HasItem("gold"));
+
+        manager.Advance();
+
+        // After advance: sword added, gold removed
+        Assert.True(state.Inventory.HasItem("sword"));
+        Assert.False(state.Inventory.HasItem("gold"));
+    }
+
+    [Fact]
+    public void SelectChoice_AppliesEffectsFromCurrentLine_BeforeNavigating()
+    {
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithEffectOnChoiceLine("key"));
+
+        Assert.False(state.Inventory.HasItem("key"));
+
+        manager.SelectChoice(0); // selects choice_a — effect on line_1 should fire first
+
+        Assert.True(state.Inventory.HasItem("key"));
+        Assert.Equal("line_2a", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void Advance_DoesNotApplyEffect_WhenBlockedByChoices()
+    {
+        // If AvailableChoices is non-empty, Advance() returns early and must NOT apply effects.
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithEffectOnChoiceLine("key"));
+
+        manager.Advance(); // has choices — should be a no-op
+
+        Assert.False(state.Inventory.HasItem("key")); // effect must not have fired
+        Assert.Equal("line_1", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void Advance_EffectAppliedExactlyOnce_OnSingleAdvance()
+    {
+        // Verifies the effect fires exactly once, not accumulating across multiple calls.
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        manager.StartEvent(ConversationFixtures.EventWithAddItemEffect("key"));
+
+        manager.Advance(); // fires effect, moves to line_2
+        // Second advance ends conversation — no effect on line_2
+        manager.Advance();
+
+        // Inventory should contain exactly one "key", not two
+        Assert.True(state.Inventory.HasItem("key"));
+        // Confirm conversation is over
+        Assert.False(manager.IsConversationActive);
+    }
+
+    [Fact]
+    public void Advance_UnknownEffectType_IsIgnoredWithoutThrowing()
+    {
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        var evt     = ConversationFixtures.SimpleLinearEvent();
+        evt.Conversations["conv_1"].DialogueLines["line_1"].Effects.Add(new ConversationEffect
+        {
+            EffectType = "NonExistentEffect",
+            Parameters = new Dictionary<string, string>()
+        });
+
+        manager.StartEvent(evt);
+
+        // Should not throw — unknown effect types are silently skipped
+        var ex = Record.Exception(() => manager.Advance());
+        Assert.Null(ex);
+        Assert.Equal("line_2", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void Advance_AddItemEffect_WithMissingItemIdParameter_IsIgnoredWithoutThrowing()
+    {
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        var evt     = ConversationFixtures.SimpleLinearEvent();
+        evt.Conversations["conv_1"].DialogueLines["line_1"].Effects.Add(new ConversationEffect
+        {
+            EffectType = "AddItem",
+            Parameters = new Dictionary<string, string>() // no itemId key
+        });
+
+        manager.StartEvent(evt);
+
+        var ex = Record.Exception(() => manager.Advance());
+        Assert.Null(ex);
+        Assert.Equal("line_2", manager.CurrentLine!.Id);
+    }
+
+    [Fact]
+    public void RegisterHandler_AllowsCustomEffectType()
+    {
+        var state   = new GameState();
+        var manager = CreateManager(state);
+        var custom  = new TrackingEffectHandler();
+        manager.RegisterHandler(custom);
+
+        var evt = ConversationFixtures.SimpleLinearEvent();
+        evt.Conversations["conv_1"].DialogueLines["line_1"].Effects.Add(new ConversationEffect
+        {
+            EffectType = "Tracking",
+            Parameters = new Dictionary<string, string>()
+        });
+
+        manager.StartEvent(evt);
+        manager.Advance();
+
+        Assert.Equal(1, custom.ApplyCount);
+    }
+
+    private sealed class TrackingEffectHandler : ChagrinFalls.Backend.Effects.IEffectHandler
+    {
+        public string EffectType  => "Tracking";
+        public int    ApplyCount  { get; private set; }
+        public void Apply(ConversationEffect effect, GameState gameState) => ApplyCount++;
+    }
+
     // ── Custom evaluators ─────────────────────────────────────────────────────
 
     [Fact]
