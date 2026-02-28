@@ -50,6 +50,11 @@
       "id": "donut",
       "name": "Donut",
       "description": "Nicely glazed donut."
+    },
+    "magic_hat": {
+      "id": "magic_hat",
+      "name": "Magic Hat",
+      "description": "It\u0027s a hat"
     }
   },
   "conversationEvents": {
@@ -68,6 +73,21 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [
+                {
+                  "id": "branch",
+                  "conditions": [
+                    {
+                      "conditionType": "ItemInInventory",
+                      "parameters": {
+                        "itemId": "donut",
+                        "negate": "true"
+                      }
+                    }
+                  ],
+                  "nextDialogueLineId": "npc_line_8"
+                }
+              ],
               "nextDialogueLineId": "npc_line_2"
             },
             "npc_line_2": {
@@ -98,6 +118,7 @@
                 }
               ],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": null
             },
             "npc_line_3": {
@@ -107,6 +128,7 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": "npc_line_4"
             },
             "npc_line_4": {
@@ -123,6 +145,7 @@
                   }
                 }
               ],
+              "branches": [],
               "nextDialogueLineId": "npc_line_5"
             },
             "npc_line_5": {
@@ -142,9 +165,24 @@
                   "text": "I\u0027ve got all the information I need, thanks.",
                   "conditions": [],
                   "nextDialogueLineId": null
+                },
+                {
+                  "id": "choice_3",
+                  "text": "Tadah!",
+                  "conditions": [
+                    {
+                      "conditionType": "ItemInInventory",
+                      "parameters": {
+                        "itemId": "magic_hat",
+                        "negate": "false"
+                      }
+                    }
+                  ],
+                  "nextDialogueLineId": null
                 }
               ],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": null
             },
             "npc_line_6": {
@@ -154,6 +192,7 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": "npc_line_7"
             },
             "npc_line_7": {
@@ -163,6 +202,17 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [],
+              "nextDialogueLineId": null
+            },
+            "npc_line_8": {
+              "id": "npc_line_8",
+              "speaker": "John Donut",
+              "text": "I\u0027m hungry and I don\u0027t have a lunch, go away.",
+              "conditions": [],
+              "choices": [],
+              "effects": [],
+              "branches": [],
               "nextDialogueLineId": null
             }
           },
@@ -191,6 +241,7 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": "npc_line_2"
             },
             "npc_line_2": {
@@ -200,6 +251,7 @@
               "conditions": [],
               "choices": [],
               "effects": [],
+              "branches": [],
               "nextDialogueLineId": "npc_line_3"
             },
             "npc_line_3": {
@@ -216,6 +268,7 @@
                   }
                 }
               ],
+              "branches": [],
               "nextDialogueLineId": null
             }
           },

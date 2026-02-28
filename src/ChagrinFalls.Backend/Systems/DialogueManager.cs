@@ -110,7 +110,10 @@ public class DialogueManager
             return; // Player must select a choice.
 
         ApplyEffects(_currentLine.Effects);
-        NavigateToLine(_currentLine.NextDialogueLineId);
+
+        // Evaluate conditional branches in order; first match wins.
+        var branch = _currentLine.Branches.FirstOrDefault(b => AllConditionsMet(b.Conditions));
+        NavigateToLine(branch != null ? branch.NextDialogueLineId : _currentLine.NextDialogueLineId);
     }
 
     /// <summary>

@@ -129,6 +129,16 @@ public partial class ConversationEventForm : VBoxContainer
         };
         row2.AddChild(nextDd);
         row2.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        var addBranchBtn = new Button { Text = "＋ Branch" };
+        addBranchBtn.Pressed += () =>
+        {
+            line.Branches.Add(new ConditionalBranch
+            {
+                Id = EditorState.GenerateId("branch", line.Branches.Select(b => b.Id)),
+            });
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        row2.AddChild(addBranchBtn);
         var addEffectBtn = new Button { Text = "＋ Effect" };
         addEffectBtn.Pressed += () =>
         {
@@ -149,6 +159,8 @@ public partial class ConversationEventForm : VBoxContainer
         };
         row2.AddChild(addChoiceBtn);
         vbox.AddChild(row2);
+        foreach (var branch in line.Branches.ToList())
+            vbox.AddChild(BuildBranchRow(convId, conv, line, branch));
         foreach (var effect in line.Effects.ToList())
             vbox.AddChild(BuildEffectRow(convId, line, effect));
         foreach (var choice in line.Choices)
@@ -206,6 +218,115 @@ public partial class ConversationEventForm : VBoxContainer
         vbox.AddChild(addCondRow);
         return vbox;
     }
+    // ── Branch row ────────────────────────────────────────────────────────────
+
+    private Control BuildBranchRow(string convId, Conversation conv, DialogueLine line, ConditionalBranch branch)
+    {
+        var vbox = new VBoxContainer();
+        vbox.AddThemeConstantOverride("separation", 2);
+
+        // Header row: icon + "If →" label + target dropdown + ＋ Condition + 🗑
+        var headerRow = new HBoxContainer();
+        headerRow.AddThemeConstantOverride("separation", 4);
+        headerRow.AddChild(new Label { Text = "  ⤷", CustomMinimumSize = new Vector2(32, 0) });
+        headerRow.AddChild(new Label { Text = "If conditions met, go to:" });
+
+        var targetDd = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        PopulateLineDropdownWithLabels(targetDd, conv, branch.NextDialogueLineId, excludeId: line.Id);
+        targetDd.ItemSelected += _ =>
+        {
+            branch.NextDialogueLineId = DropdownHelper.GetSelectedId(targetDd);
+            if (string.IsNullOrEmpty(branch.NextDialogueLineId)) branch.NextDialogueLineId = null;
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        headerRow.AddChild(targetDd);
+
+        var addCondBtn = new Button { Text = "＋ Condition" };
+        addCondBtn.Pressed += () =>
+        {
+            branch.Conditions.Add(new Condition
+            {
+                ConditionType = "ItemInInventory",
+                Parameters    = new Dictionary<string, string> { ["itemId"] = "", ["negate"] = "false" },
+            });
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        headerRow.AddChild(addCondBtn);
+
+        var delBranchBtn = new Button { Text = "🗑" };
+        delBranchBtn.Pressed += () =>
+        {
+            line.Branches.Remove(branch);
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        headerRow.AddChild(delBranchBtn);
+        vbox.AddChild(headerRow);
+
+        // Condition rows (indented one more level)
+        foreach (var cond in branch.Conditions.ToList())
+            vbox.AddChild(BuildBranchConditionRow(convId, line, branch, cond));
+
+        return vbox;
+    }
+
+    private Control BuildBranchConditionRow(string convId, DialogueLine line, ConditionalBranch branch, Condition cond)
+    {
+        var row = new HBoxContainer();
+        row.AddThemeConstantOverride("separation", 4);
+        row.AddChild(new Control { CustomMinimumSize = new Vector2(64, 0) }); // deeper indent
+
+        var systemDd = new OptionButton { CustomMinimumSize = new Vector2(110, 0) };
+        systemDd.AddItem("Inventory"); systemDd.SetItemMetadata(0, "ItemInInventory");
+        systemDd.AddItem("Journal");   systemDd.SetItemMetadata(1, "InformationLearned");
+        systemDd.Selected = cond.ConditionType == "InformationLearned" ? 1 : 0;
+
+        var opDd = new OptionButton { CustomMinimumSize = new Vector2(160, 0) };
+        opDd.AddItem("contains");         opDd.SetItemMetadata(0, "false");
+        opDd.AddItem("does not contain"); opDd.SetItemMetadata(1, "true");
+        var isNegate = cond.Parameters.TryGetValue("negate", out var negVal) && negVal == "true";
+        opDd.Selected = isNegate ? 1 : 0;
+
+        var itemKey = cond.ConditionType == "InformationLearned" ? "informationId" : "itemId";
+        cond.Parameters.TryGetValue(itemKey, out var currentId);
+        var itemDd = new OptionButton { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        PopulateConditionTargets(itemDd, cond.ConditionType, currentId);
+
+        systemDd.ItemSelected += _ =>
+        {
+            cond.ConditionType = (string)systemDd.GetItemMetadata(systemDd.Selected);
+            cond.Parameters.Clear();
+            cond.Parameters["negate"] = (string)opDd.GetItemMetadata(opDd.Selected);
+            var key = cond.ConditionType == "InformationLearned" ? "informationId" : "itemId";
+            cond.Parameters[key] = "";
+            PopulateConditionTargets(itemDd, cond.ConditionType, null);
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        opDd.ItemSelected += _ =>
+        {
+            cond.Parameters["negate"] = (string)opDd.GetItemMetadata(opDd.Selected);
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+        itemDd.ItemSelected += _ =>
+        {
+            var key = cond.ConditionType == "InformationLearned" ? "informationId" : "itemId";
+            cond.Parameters[key] = DropdownHelper.GetSelectedId(itemDd);
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+
+        var delBtn = new Button { Text = "🗑" };
+        delBtn.Pressed += () =>
+        {
+            branch.Conditions.Remove(cond);
+            _state.UpdateDialogueLine(_eventId, convId, line);
+        };
+
+        row.AddChild(systemDd);
+        row.AddChild(opDd);
+        row.AddChild(itemDd);
+        row.AddChild(delBtn);
+        return row;
+    }
+
     // ── Effect row ────────────────────────────────────────────────────────────
 
     private Control BuildEffectRow(string convId, DialogueLine line, ConversationEffect effect)
