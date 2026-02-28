@@ -207,6 +207,20 @@ public class LocationManagerTests
     }
 
     [Fact]
+    public void PickUpItem_Throws_WhenPoiIdIsNull()
+    {
+        var manager = CreateManager();
+        Assert.Throws<ArgumentNullException>(() => manager.PickUpItem(null!));
+    }
+
+    [Fact]
+    public void PickUpItem_Throws_WhenPoiIdIsWhitespace()
+    {
+        var manager = CreateManager();
+        Assert.Throws<ArgumentException>(() => manager.PickUpItem("   "));
+    }
+
+    [Fact]
     public void PickUpItem_Throws_WhenPoiNotFound()
     {
         var manager = CreateManager();

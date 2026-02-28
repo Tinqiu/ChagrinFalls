@@ -14,7 +14,7 @@ public partial class LocationScreen : Control
     private Label _locationNameLabel = null!;
     private VBoxContainer _poiContainer = null!;
 
-    private LocationManager _locationManager = null!;
+    private LocationManager? _locationManager;
 
     /// <summary>
     /// Emitted when the player clicks a character POI.
@@ -31,7 +31,8 @@ public partial class LocationScreen : Control
 
     public override void _ExitTree()
     {
-        _locationManager.OnLocationChanged -= Refresh;
+        if (_locationManager != null)
+            _locationManager.OnLocationChanged -= Refresh;
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -42,6 +43,8 @@ public partial class LocationScreen : Control
     /// </summary>
     public void Initialise(LocationManager locationManager)
     {
+        ArgumentNullException.ThrowIfNull(locationManager);
+
         if (_locationManager != null)
         {
             GD.PushWarning($"{nameof(LocationScreen)}.{nameof(Initialise)} called more than once — ignoring.");
@@ -74,6 +77,8 @@ public partial class LocationScreen : Control
 
     private void OnPoiPressed(PointOfInterest poi)
     {
+        if (_locationManager is null) return;
+
         switch (poi.Type)
         {
             case PointOfInterestType.Character:

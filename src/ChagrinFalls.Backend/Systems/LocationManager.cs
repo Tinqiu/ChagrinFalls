@@ -73,6 +73,8 @@ public class LocationManager
     /// </exception>
     public string PickUpItem(string poiId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(poiId);
+
         var poi = CurrentLocation.PointsOfInterest
             .FirstOrDefault(p => string.Equals(p.Id, poiId, StringComparison.OrdinalIgnoreCase));
 
