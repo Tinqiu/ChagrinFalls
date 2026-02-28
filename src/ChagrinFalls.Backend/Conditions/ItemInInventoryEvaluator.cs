@@ -5,9 +5,19 @@ namespace ChagrinFalls.Backend.Conditions;
 
 /// <summary>
 /// Evaluates the <c>ItemInInventory</c> condition.
-/// Requires parameter <c>itemId</c> — the identifier of the item to check for.
-/// Supports optional parameter <c>negate</c> — set to <c>"true"</c> (case-insensitive)
-/// to invert the result (i.e. condition passes when the item is <em>not</em> in the inventory).
+/// <para>Required parameter: <c>itemId</c> — the identifier of the item to check for.</para>
+/// <para>Optional parameter: <c>negate</c> — set to <c>"true"</c> (case-insensitive)
+/// to invert the result, i.e. the condition passes when the item is <em>not</em> in the inventory.</para>
+/// <example>
+/// JSON — passes when the player has "torn_letter":
+/// <code>
+/// { "conditionType": "ItemInInventory", "parameters": { "itemId": "torn_letter" } }
+/// </code>
+/// JSON — passes when the player does NOT have "torn_letter":
+/// <code>
+/// { "conditionType": "ItemInInventory", "parameters": { "itemId": "torn_letter", "negate": "true" } }
+/// </code>
+/// </example>
 /// </summary>
 public class ItemInInventoryEvaluator : IConditionEvaluator
 {

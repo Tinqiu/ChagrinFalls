@@ -48,6 +48,90 @@ public class ConditionEvaluatorTests
         Assert.False(evaluator.Evaluate(condition, state));
     }
 
+    // negate=true cases
+
+    [Fact]
+    public void ItemInInventory_Negated_ReturnsTrue_WhenItemAbsent()
+    {
+        var state     = new GameState(); // item not added
+        var evaluator = new ItemInInventoryEvaluator();
+        var condition = new Condition
+        {
+            ConditionType = "ItemInInventory",
+            Parameters    = new Dictionary<string, string>
+                { ["itemId"] = "rusty_key", ["negate"] = "true" }
+        };
+
+        Assert.True(evaluator.Evaluate(condition, state));
+    }
+
+    [Fact]
+    public void ItemInInventory_Negated_ReturnsFalse_WhenItemPresent()
+    {
+        var state = new GameState();
+        state.Inventory.AddItem("rusty_key");
+        var evaluator = new ItemInInventoryEvaluator();
+        var condition = new Condition
+        {
+            ConditionType = "ItemInInventory",
+            Parameters    = new Dictionary<string, string>
+                { ["itemId"] = "rusty_key", ["negate"] = "true" }
+        };
+
+        Assert.False(evaluator.Evaluate(condition, state));
+    }
+
+    [Fact]
+    public void ItemInInventory_Negated_IsCaseInsensitive_OnNegateValue()
+    {
+        var state = new GameState(); // item absent — negate=TRUE should still return true
+        var evaluator = new ItemInInventoryEvaluator();
+
+        foreach (var negateValue in new[] { "TRUE", "True", "tRuE" })
+        {
+            var condition = new Condition
+            {
+                ConditionType = "ItemInInventory",
+                Parameters    = new Dictionary<string, string>
+                    { ["itemId"] = "rusty_key", ["negate"] = negateValue }
+            };
+            Assert.True(evaluator.Evaluate(condition, state),
+                $"Expected true for negate=\"{negateValue}\" when item is absent");
+        }
+    }
+
+    [Fact]
+    public void ItemInInventory_Negated_False_BehavesLikeNoNegate()
+    {
+        // negate=false should be identical to omitting the parameter entirely
+        var state = new GameState();
+        state.Inventory.AddItem("rusty_key");
+        var evaluator = new ItemInInventoryEvaluator();
+        var condition = new Condition
+        {
+            ConditionType = "ItemInInventory",
+            Parameters    = new Dictionary<string, string>
+                { ["itemId"] = "rusty_key", ["negate"] = "false" }
+        };
+
+        Assert.True(evaluator.Evaluate(condition, state));
+    }
+
+    [Fact]
+    public void ItemInInventory_Negated_WithMissingItemId_ReturnsFalse()
+    {
+        // negate=true but no itemId — should still return false (missing required param)
+        var state     = new GameState();
+        var evaluator = new ItemInInventoryEvaluator();
+        var condition = new Condition
+        {
+            ConditionType = "ItemInInventory",
+            Parameters    = new Dictionary<string, string> { ["negate"] = "true" }
+        };
+
+        Assert.False(evaluator.Evaluate(condition, state));
+    }
+
     // ── InformationLearned ────────────────────────────────────────────────────
 
     [Fact]

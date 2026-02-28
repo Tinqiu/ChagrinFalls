@@ -8,7 +8,7 @@ namespace ChagrinFalls.Backend.Systems;
 /// Serialises a <see cref="Storybook"/> to a JSON file on disk.
 /// Produces output compatible with <see cref="StorybookLoader"/> (camelCase properties, camelCase enum values, indented).
 /// </summary>
-public class StorybookSaver
+public static class StorybookSaver
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -23,7 +23,7 @@ public class StorybookSaver
     /// </summary>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="storybook"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="filePath"/> is null or whitespace.</exception>
-    public void Save(Storybook storybook, string filePath)
+    public static void Save(Storybook storybook, string filePath)
     {
         ArgumentNullException.ThrowIfNull(storybook);
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);

@@ -61,8 +61,8 @@ public partial class DialogueUI : CanvasLayer
         _dialogueLabel.Text = message;
         ClearChoices();
         _advanceButton.Show();
-        // Pressing advance just closes the panel since there's no manager
         _advanceButton.Pressed -= OnAdvancePressed;
+        _advanceButton.Pressed -= CloseMessage;
         _advanceButton.Pressed += CloseMessage;
         Show();
     }

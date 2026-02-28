@@ -355,14 +355,14 @@ public partial class ConversationEventForm : VBoxContainer
         actionDd.ItemSelected += _ =>
         {
             effect.EffectType = (string)actionDd.GetItemMetadata(actionDd.Selected);
-            // Keep itemId parameter — it applies to both Add and Remove
             PopulateEffectTargets(itemDd, effect.EffectType, currentItemId);
             _state.UpdateDialogueLine(_eventId, convId, line);
         };
 
         itemDd.ItemSelected += _ =>
         {
-            effect.Parameters["itemId"] = DropdownHelper.GetSelectedId(itemDd);
+            currentItemId = DropdownHelper.GetSelectedId(itemDd);
+            effect.Parameters["itemId"] = currentItemId;
             _state.UpdateDialogueLine(_eventId, convId, line);
         };
 

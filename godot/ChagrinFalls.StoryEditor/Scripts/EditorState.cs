@@ -91,18 +91,28 @@ public partial class EditorState : Node
         NotifyChanged();
     }
 
-    /// <summary>Renames a character: updates Name, re-keys the dictionary, fixes POI references. Returns the new ID.</summary>
+    /// <summary>Renames a character: updates Name, re-keys the dictionary, fixes POI references,
+    /// and updates all dialogue line Speaker values that matched the old name. Returns the new ID.</summary>
     public string RenameCharacter(string oldId, string newName)
     {
         if (!Storybook.Characters.TryGetValue(oldId, out var c)) return oldId;
         var newId = GenerateId(newName, Storybook.Characters.Keys.Where(k => k != oldId));
         Storybook.Characters.Remove(oldId);
+        var oldName = c.Name;
         c.Id   = newId;
         c.Name = newName;
         Storybook.Characters[newId] = c;
+
+        // Fix POI character references
         foreach (var loc in Storybook.Locations.Values)
             foreach (var poi in loc.PointsOfInterest.Where(p => p.CharacterId == oldId))
                 poi.CharacterId = newId;
+
+        // Fix Speaker on dialogue lines that used the old character name
+        foreach (var line in AllDialogueLines())
+            if (line.Speaker == oldName)
+                line.Speaker = newName;
+
         NotifyChanged();
         return newId;
     }
@@ -133,7 +143,8 @@ public partial class EditorState : Node
         NotifyChanged();
     }
 
-    /// <summary>Renames an item: updates Name, re-keys the dictionary, fixes POI references. Returns the new ID.</summary>
+    /// <summary>Renames an item: updates Name, re-keys the dictionary, fixes POI references,
+    /// and updates all Condition and ConversationEffect parameter references. Returns the new ID.</summary>
     public string RenameItem(string oldId, string newName)
     {
         if (!Storybook.Items.TryGetValue(oldId, out var item)) return oldId;
@@ -142,9 +153,23 @@ public partial class EditorState : Node
         item.Id   = newId;
         item.Name = newName;
         Storybook.Items[newId] = item;
+
+        // Fix POI item references
         foreach (var loc in Storybook.Locations.Values)
             foreach (var poi in loc.PointsOfInterest.Where(p => p.ItemId == oldId))
                 poi.ItemId = newId;
+
+        // Fix itemId in conditions and effects across all dialogue lines
+        foreach (var line in AllDialogueLines())
+        {
+            foreach (var cond in line.Conditions.Concat(line.Choices.SelectMany(c => c.Conditions))
+                                                .Concat(line.Branches.SelectMany(b => b.Conditions)))
+                ReplaceParameter(cond.Parameters, "itemId", oldId, newId);
+
+            foreach (var effect in line.Effects)
+                ReplaceParameter(effect.Parameters, "itemId", oldId, newId);
+        }
+
         NotifyChanged();
         return newId;
     }
@@ -257,6 +282,9 @@ public partial class EditorState : Node
     public void RemoveConversationEvent(string eventId)
     {
         Storybook.ConversationEvents.Remove(eventId);
+        foreach (var loc in Storybook.Locations.Values)
+            foreach (var poi in loc.PointsOfInterest.Where(p => p.ConversationEventId == eventId))
+                poi.ConversationEventId = null;
         NotifyChanged();
     }
 
@@ -279,7 +307,8 @@ public partial class EditorState : Node
 
     public Conversation AddConversation(string eventId, string name)
     {
-        if (!Storybook.ConversationEvents.TryGetValue(eventId, out var evt)) return null!;
+        if (!Storybook.ConversationEvents.TryGetValue(eventId, out var evt))
+            throw new ArgumentException($"Conversation event '{eventId}' not found.", nameof(eventId));
         var conv = new Conversation { Id = GenerateId(name, evt.Conversations.Keys) };
         evt.Conversations[conv.Id] = conv;
         NotifyChanged();
@@ -295,8 +324,10 @@ public partial class EditorState : Node
 
     public DialogueLine AddDialogueLine(string eventId, string conversationId, string speaker, string text)
     {
-        if (!Storybook.ConversationEvents.TryGetValue(eventId, out var evt)) return null!;
-        if (!evt.Conversations.TryGetValue(conversationId, out var conv)) return null!;
+        if (!Storybook.ConversationEvents.TryGetValue(eventId, out var evt))
+            throw new ArgumentException($"Conversation event '{eventId}' not found.", nameof(eventId));
+        if (!evt.Conversations.TryGetValue(conversationId, out var conv))
+            throw new ArgumentException($"Conversation '{conversationId}' not found in event '{eventId}'.", nameof(conversationId));
         var existing = conv.DialogueLines.Keys;
         var line = new DialogueLine
         {
@@ -354,6 +385,23 @@ public partial class EditorState : Node
             name.ToLowerInvariant()
                 .Select(c => char.IsLetterOrDigit(c) ? c : '_'))
             .Trim('_');
+    }
+
+    /// <summary>Enumerates every <see cref="DialogueLine"/> across all conversation events.</summary>
+    private IEnumerable<DialogueLine> AllDialogueLines() =>
+        Storybook.ConversationEvents.Values
+            .SelectMany(e => e.Conversations.Values)
+            .SelectMany(c => c.DialogueLines.Values);
+
+    /// <summary>
+    /// Replaces <paramref name="oldValue"/> with <paramref name="newValue"/> for
+    /// <paramref name="key"/> in <paramref name="parameters"/> if the current value matches.
+    /// </summary>
+    private static void ReplaceParameter(
+        Dictionary<string, string> parameters, string key, string oldValue, string newValue)
+    {
+        if (parameters.TryGetValue(key, out var current) && current == oldValue)
+            parameters[key] = newValue;
     }
 
     private static Storybook NewStorybook() => new()

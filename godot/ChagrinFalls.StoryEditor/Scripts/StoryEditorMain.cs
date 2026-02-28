@@ -206,7 +206,7 @@ public partial class StoryEditorMain : Control
             // Sync the storybook ID from the file name.
             var id = System.IO.Path.GetFileNameWithoutExtension(path);
             _state.SetId(id);
-            new StorybookSaver().Save(_state.Storybook, path);
+            StorybookSaver.Save(_state.Storybook, path);
             GD.Print($"Saved to {path}");
         }
         catch (Exception ex)

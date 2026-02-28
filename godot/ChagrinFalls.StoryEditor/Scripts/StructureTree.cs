@@ -23,11 +23,14 @@ public partial class StructureTree : Tree
     public void Initialise(EditorState state)
     {
         _state = state;
-        _state.Changed += () => CallDeferred(MethodName.Refresh);
+        _state.Changed += OnChanged;
         HideRoot = true;
-        // _Ready may have already fired before Initialise was called; refresh now
-        // that state is available. IsInsideTree() guard in Refresh() keeps this safe.
         CallDeferred(MethodName.Refresh);
+    }
+
+    public override void _ExitTree()
+    {
+        if (_state != null) _state.Changed -= OnChanged;
     }
 
     public override void _Ready()
@@ -35,6 +38,8 @@ public partial class StructureTree : Tree
         ItemSelected += OnItemSelected;
         Refresh();
     }
+
+    private void OnChanged() => CallDeferred(MethodName.Refresh);
 
     // ── Public API ────────────────────────────────────────────────────────────
 
