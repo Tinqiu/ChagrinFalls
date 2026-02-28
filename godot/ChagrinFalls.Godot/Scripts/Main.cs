@@ -10,12 +10,15 @@ namespace ChagrinFalls.Godot.Scripts;
 /// </summary>
 public partial class Main : Node
 {
-    [Export] private DialogueUI _dialogueUI = null!;
+    private DialogueUI _dialogueUI = null!;
 
     private GameState _gameState = null!;
 
     public override void _Ready()
     {
+        // Get the DialogueUI child node from the scene tree.
+        _dialogueUI = GetNode<DialogueUI>("DialogueUI");
+
         _gameState = new GameState();
 
         // Give the player a sample item so the conditional choice is visible.

@@ -10,12 +10,12 @@ namespace ChagrinFalls.Godot.Scripts;
 /// </summary>
 public partial class DialogueUI : CanvasLayer
 {
-    // ── Exported node paths ───────────────────────────────────────────────────
+    // ── Node references ───────────────────────────────────────────────────────
 
-    [Export] private Label _speakerLabel = null!;
-    [Export] private Label _dialogueLabel = null!;
-    [Export] private VBoxContainer _choicesContainer = null!;
-    [Export] private Button _advanceButton = null!;
+    private Label _speakerLabel = null!;
+    private Label _dialogueLabel = null!;
+    private VBoxContainer _choicesContainer = null!;
+    private Button _advanceButton = null!;
 
     // ── State ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +25,12 @@ public partial class DialogueUI : CanvasLayer
 
     public override void _Ready()
     {
+        // Get node references from the scene tree.
+        _speakerLabel = GetNode<Label>("Panel/MarginContainer/VBoxContainer/SpeakerLabel");
+        _dialogueLabel = GetNode<Label>("Panel/MarginContainer/VBoxContainer/DialogueLabel");
+        _choicesContainer = GetNode<VBoxContainer>("Panel/MarginContainer/VBoxContainer/ChoicesContainer");
+        _advanceButton = GetNode<Button>("Panel/MarginContainer/VBoxContainer/AdvanceButton");
+
         Hide();
         _advanceButton.Pressed += OnAdvancePressed;
     }
