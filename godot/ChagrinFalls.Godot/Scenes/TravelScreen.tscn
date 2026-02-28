@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://UIqzM8b0POlM8"]
+[gd_scene load_steps=4 format=3 uid="uid://ouPXHRVKwJVkt"]
 
-[ext_resource type="Script" path="res://Scripts/InventoryScreen.cs" id="1_inventoryscreen"]
+[ext_resource type="Script" path="res://Scripts/TravelScreen.cs" id="1_travelscreen"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.1, 0.1, 0.13, 1.0)
@@ -22,9 +22,9 @@ content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 
-[node name="InventoryScreen" type="CanvasLayer"]
+[node name="TravelScreen" type="CanvasLayer"]
 layer = 10
-script = ExtResource("1_inventoryscreen")
+script = ExtResource("1_travelscreen")
 
 [node name="Overlay" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -42,9 +42,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -250.0
+offset_top = -200.0
 offset_right = 200.0
-offset_bottom = 250.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -61,7 +61,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_titlebar")
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
-text = "Backpack"
+text = "Travel to..."
 
 [node name="CloseButton" type="Button" parent="Overlay/Panel/VBoxContainer/TitleBar"]
 layout_mode = 2
@@ -72,7 +72,7 @@ tooltip_text = "Close"
 [node name="Separator" type="HSeparator" parent="Overlay/Panel/VBoxContainer"]
 layout_mode = 2
 
-[node name="ItemList" type="VBoxContainer" parent="Overlay/Panel/VBoxContainer"]
+[node name="LocationList" type="VBoxContainer" parent="Overlay/Panel/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 8
 
