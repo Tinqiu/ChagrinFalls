@@ -37,6 +37,7 @@ nav:
   - Home: index.md
   - Systems:
     - Dialogue Manager: systems/dialogue-manager.md
+    - Location Manager: systems/location-manager.md
     - Player Inventory: systems/player-inventory.md
     - Player Journal: systems/player-journal.md
     - Conditions: systems/conditions.md

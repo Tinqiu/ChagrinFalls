@@ -29,6 +29,7 @@ uv run mkdocs serve
 ## Key concepts
 
 - **[Dialogue Manager](systems/dialogue-manager.md)** — drives conversation flow, condition evaluation, and player choices
+- **[Location Manager](systems/location-manager.md)** — tracks the current location, travel between locations, and item pickup from points of interest
 - **[Player Inventory](systems/player-inventory.md)** — tracks items the player carries
 - **[Player Journal](systems/player-journal.md)** — records information the player has learned
 - **[Conditions](systems/conditions.md)** — gate dialogue lines and choices behind runtime predicates
