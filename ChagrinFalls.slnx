@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/godot/">
+    <Project Path="godot/ChagrinFalls.Godot/ChagrinFalls.Godot.csproj">
+      <BuildType Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ChagrinFalls.Backend/ChagrinFalls.Backend.csproj" />
+    <Project Path="src/ChagrinFalls.Tests/ChagrinFalls.Tests.csproj" />
+  </Folder>
+</Solution>
