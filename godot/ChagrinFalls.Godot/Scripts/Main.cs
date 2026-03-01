@@ -15,6 +15,7 @@ public partial class Main : Control
     private LocationScreen          _locationScreen         = null!;
     private TravelScreen            _travelScreen           = null!;
     private StorybookSelectScreen   _storybookSelectScreen  = null!;
+    private Label                   _dayTimeLabel           = null!;
 
     private GameState?       _gameState;
     private LocationManager? _locationManager;
@@ -29,6 +30,7 @@ public partial class Main : Control
         _locationScreen        = GetNode<LocationScreen>("LocationScreen");
         _travelScreen          = GetNode<TravelScreen>("TravelScreen");
         _storybookSelectScreen = GetNode<StorybookSelectScreen>("StorybookSelectScreen");
+        _dayTimeLabel          = GetNode<Label>("TopBar/HBoxContainer/DayTimeLabel");
 
         var menuBar = GetNode<MenuBar>("MenuBar");
         menuBar.BackpackPressed += OnBackpackPressed;
@@ -87,12 +89,17 @@ public partial class Main : Control
         _gameState       = new GameState();
         _activeStorybook = storybook;
 
+        // Initialize day and time from storybook settings
+        _gameState.DayTracker.SetDay(storybook.InitialDay);
+        _gameState.Clock.SetTime(storybook.InitialHour, storybook.InitialMinute);
+
         _locationManager = new LocationManager(
             _gameState,
             storybook.Locations.Values,
             storybook.StartingLocationId);
 
         _locationScreen.Initialise(_locationManager);
+        UpdateDayTimeDisplay();
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
@@ -147,5 +154,13 @@ public partial class Main : Control
     {
         if (_locationManager is null) return;
         _travelScreen.Open(_locationManager);
+    }
+
+    private void UpdateDayTimeDisplay()
+    {
+        if (_gameState is null) return;
+        var dayString = _gameState.DayTracker.GetDayString();
+        var timeString = _gameState.Clock.GetTimeString();
+        _dayTimeLabel.Text = $"{dayString} - {timeString}";
     }
 }

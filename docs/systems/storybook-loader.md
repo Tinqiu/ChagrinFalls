@@ -1,4 +1,4 @@
-﻿# Storybook Loader
+﻿﻿# Storybook Loader
 
 `ChagrinFalls.Backend.Systems.StorybookLoader`
 
@@ -61,6 +61,9 @@ public class Storybook
     public string Title { get; set; }
     public string Description { get; set; }
     public string StartingLocationId { get; set; }
+    public int InitialDay { get; set; }
+    public int InitialHour { get; set; }
+    public int InitialMinute { get; set; }
     public Dictionary<string, Location> Locations { get; set; }
     public Dictionary<string, Character> Characters { get; set; }
     public Dictionary<string, Item> Items { get; set; }
@@ -68,16 +71,19 @@ public class Storybook
 }
 ```
 
-| Property | Description |
-|---|---|
-| `Id` | Unique identifier (e.g. `"margery-and-the-spooky-shack"`). Must be non-empty. |
-| `Title` | Display name shown on the storybook selection screen. |
-| `Description` | Short summary shown as a tooltip on the selection screen. |
-| `StartingLocationId` | Must match a key in `Locations`. |
-| `Locations` | All locations keyed by their `id`. |
-| `Characters` | All characters in this storybook, keyed by character `id`. Optional — may be omitted or empty. |
-| `Items` | All items in this storybook, keyed by item `id`. Optional — may be omitted or empty. |
-| `ConversationEvents` | All conversation events keyed by their `id`. |
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `Id` | string | — | Unique identifier (e.g. `"margery-and-the-spooky-shack"`). Must be non-empty. |
+| `Title` | string | — | Display name shown on the storybook selection screen. |
+| `Description` | string | — | Short summary shown as a tooltip on the selection screen. |
+| `StartingLocationId` | string | — | Must match a key in `Locations`. |
+| `InitialDay` | int | 1 | Starting day number (1+) when the storybook loads. |
+| `InitialHour` | int | 8 | Starting hour (0-23) when the storybook loads. |
+| `InitialMinute` | int | 0 | Starting minute (0-59) when the storybook loads. |
+| `Locations` | dict | — | All locations keyed by their `id`. |
+| `Characters` | dict | — | All characters in this storybook, keyed by character `id`. Optional. |
+| `Items` | dict | — | All items in this storybook, keyed by item `id`. Optional. |
+| `ConversationEvents` | dict | — | All conversation events keyed by their `id`. |
 
 ---
 
@@ -85,12 +91,17 @@ public class Storybook
 
 Storybook files live in `godot/ChagrinFalls.Godot/Storybooks/`. Property names are **camelCase**; enum values (`type` on points of interest) are also **camelCase** (`"item"`, `"character"`).
 
+The `initialDay`, `initialHour`, and `initialMinute` properties are optional. If omitted, the game will start at Day 1, 08:00 (8:00 AM). These properties control when the game clock starts when the storybook is loaded.
+
 ```json
 {
   "id": "my-story",
   "title": "My Story",
   "description": "A short description.",
   "startingLocationId": "loc_a",
+  "initialDay": 1,
+  "initialHour": 8,
+  "initialMinute": 0,
   "locations": {
     "loc_a": {
       "id": "loc_a",

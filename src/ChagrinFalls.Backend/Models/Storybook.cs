@@ -1,4 +1,4 @@
-﻿namespace ChagrinFalls.Backend.Models;
+﻿﻿namespace ChagrinFalls.Backend.Models;
 
 /// <summary>
 /// A self-contained storyline — bundles all locations, conversation events,
@@ -16,11 +16,19 @@ public class Storybook
     /// <summary>Short description shown alongside the title on the selection screen.</summary>
     public string Description { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The ID of the location the player starts in when this storybook is loaded.
+    /// <summary>The ID of the location the player starts in when this storybook is loaded.
     /// Must match a key in <see cref="Locations"/>.
     /// </summary>
     public string StartingLocationId { get; set; } = string.Empty;
+
+    /// <summary>The starting day for this storybook (default: 1).</summary>
+    public int InitialDay { get; set; } = 1;
+
+    /// <summary>The starting hour for this storybook (0-23, default: 8).</summary>
+    public int InitialHour { get; set; } = 8;
+
+    /// <summary>The starting minute for this storybook (0-59, default: 0).</summary>
+    public int InitialMinute { get; set; } = 0;
 
     /// <summary>All locations in this storybook, keyed by location ID.</summary>
     public Dictionary<string, Location> Locations { get; set; } = new();
