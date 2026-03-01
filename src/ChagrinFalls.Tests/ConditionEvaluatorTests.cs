@@ -138,13 +138,19 @@ public class ConditionEvaluatorTests
     public void InformationLearned_ReturnsTrue_WhenInformationKnown()
     {
         var state = new GameState();
-        state.Journal.LearnInformation("victim_identity");
+        var entry = new JournalEntry()
+        {
+            Id = "victim_identity",
+            Title = "Victim's Identity",
+            Description = "You discovered the identity of the victim."
+        };
+        state.Journal.LearnInformation(entry);
 
         var evaluator = new InformationLearnedEvaluator();
         var condition = new Condition
         {
             ConditionType = "InformationLearned",
-            Parameters = new Dictionary<string, string> { ["informationId"] = "victim_identity" }
+            Parameters = new Dictionary<string, string> { ["informationId"] = entry.Id }
         };
 
         Assert.True(evaluator.Evaluate(condition, state));
