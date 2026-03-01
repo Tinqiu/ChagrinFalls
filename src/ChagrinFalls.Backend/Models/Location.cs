@@ -19,7 +19,6 @@ public class Location
 
     /// <summary>
     /// The points of interest currently present at this location.
-    /// Items are removed from this list when the player picks them up.
     /// </summary>
     public List<PointOfInterest> PointsOfInterest { get; set; } = new();
 }

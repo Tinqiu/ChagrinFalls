@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://VDYip8KCwPHUV"]
+[gd_scene load_steps=10 format=3 uid="uid://VDYip8KCwPHUV"]
 
 [ext_resource type="Script" path="res://Scripts/Main.cs" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://8WIQOuoI6O7gD" path="res://Scenes/DialogueUI.tscn" id="2_dialogueui"]
@@ -7,6 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://iHliBIVyAvNwN" path="res://Scenes/LocationScreen.tscn" id="5_locationscreen"]
 [ext_resource type="PackedScene" uid="uid://ouPXHRVKwJVkt" path="res://Scenes/TravelScreen.tscn" id="6_travelscreen"]
 [ext_resource type="PackedScene" uid="uid://0Meg78dDNhcNm" path="res://Scenes/StorybookSelectScreen.tscn" id="7_storybookselectscreen"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
+bg_color = Color(0.08, 0.08, 0.1, 1)
+border_width_bottom = 2
+border_color = Color(0.2, 0.2, 0.25, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_dayTime"]
+font_sizes/font_size = 20
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
@@ -24,7 +32,25 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.08, 0.1, 1)
 
+[node name="TopBar" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_topbar")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="DayTimeLabel" type="Label" parent="TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+label_settings = SubResource("LabelSettings_dayTime")
+text = "Day 1 - 00:00"
+
 [node name="LocationScreen" parent="." instance=ExtResource("5_locationscreen")]
+offset_top = 50.0
 
 [node name="DialogueUI" parent="." instance=ExtResource("2_dialogueui")]
 

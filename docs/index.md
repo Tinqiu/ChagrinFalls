@@ -46,5 +46,8 @@ The visual authoring tool for building storylines without writing JSON by hand.
 - **[Location Manager](systems/location-manager.md)** — tracks the current location, travel between locations, and item pickup from points of interest
 - **[Player Inventory](systems/player-inventory.md)** — tracks items the player carries
 - **[Player Journal](systems/player-journal.md)** — records information the player has learned
+- **[Day Tracker](systems/day-tracker.md)** — tracks the current day (Day 1, Day 2, etc.)
+- **[Game Clock](systems/game-clock.md)** — tracks the current time of day with an API to advance time
 - **[Conditions](systems/conditions.md)** — gate dialogue lines and choices behind runtime predicates
+- **[Time and Day Conditions](systems/time-and-day-conditions.md)** — special conditions for gating content by time of day or game day
 

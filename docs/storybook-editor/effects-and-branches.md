@@ -1,4 +1,4 @@
-﻿# Effects & Conditional Branching
+﻿﻿# Effects & Conditional Branching
 
 Beyond player choices, the editor supports two more tools for making dialogue reactive to game state:
 
@@ -23,9 +23,9 @@ Click **＋ Effect** on the line. An effect row appears marked with ⚡.
 
 | Dropdown | Options | Description |
 |---|---|---|
-| **System** | Inventory | Which game system the effect targets (Journal will be added later) |
-| **Action** | Add item / Remove item | Whether to add or remove |
-| **Item** | (item dropdown) | The specific item from the storybook |
+| **System** | Inventory / Time | Which game system the effect targets |
+| **Action** | Add item / Remove item / Advance time | Whether to add/remove an item or advance the game clock |
+| **Target/Value** | Varies by action | For items: item dropdown; for time: hours and minutes input fields |
 
 Click 🗑 to remove an effect.
 
@@ -33,10 +33,15 @@ Click 🗑 to remove an effect.
 
 A line can have multiple effects — they are applied in order from top to bottom.
 
-### Example
+### Example — Inventory Effect
 
 > *"Here you go!"* — line has an effect **Inventory → Remove item → Donut**  
 > When the player advances past this line the donut is removed from the inventory before the next line displays.
+
+### Example — Time Effect
+
+> *"Let me think about that..."* — line has an effect **Time → Advance time → 1 hour, 30 minutes**  
+> When the player advances past this line, 1 hour and 30 minutes are added to the game clock before the next line displays.
 
 ---
 
