@@ -24,6 +24,8 @@ public class Condition
 |---|---|---|
 | `ItemInInventory` | `itemId` | True when `GameState.Inventory.HasItem(itemId)` |
 | `InformationLearned` | `informationId` | True when `GameState.Journal.HasLearned(informationId)` |
+| `TimeOfDay` | `startHour`, `endHour` | True when current time falls within a range or matches exact time |
+| `GameDay` | `startDay`, `endDay` | True when current day falls within a range, equals a day, or is on/after a day |
 
 ### Example — gate a choice behind an item
 
@@ -42,6 +44,96 @@ new Condition
 {
     ConditionType = "InformationLearned",
     Parameters    = new Dictionary<string, string> { ["informationId"] = "victim_identity" }
+}
+```
+
+### Example — gate content to afternoon/evening (12:00–20:00)
+
+```csharp
+new Condition
+{
+    ConditionType = "TimeOfDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startHour"] = "12",
+        ["startMinute"] = "0",
+        ["endHour"] = "20",
+        ["endMinute"] = "0",
+        ["mode"] = "between"
+    }
+}
+```
+
+### Example — gate content to night hours (22:00–06:00, wraps midnight)
+
+```csharp
+new Condition
+{
+    ConditionType = "TimeOfDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startHour"] = "22",
+        ["endHour"] = "6",
+        ["mode"] = "between"
+    }
+}
+```
+
+### Example — gate content to a specific time (exact match)
+
+```csharp
+new Condition
+{
+    ConditionType = "TimeOfDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startHour"] = "14",
+        ["startMinute"] = "30",
+        ["mode"] = "exact"
+    }
+}
+```
+
+### Example — gate content to days 2–4
+
+```csharp
+new Condition
+{
+    ConditionType = "GameDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startDay"] = "2",
+        ["endDay"] = "4",
+        ["mode"] = "between"
+    }
+}
+```
+
+### Example — gate content to day 5 only
+
+```csharp
+new Condition
+{
+    ConditionType = "GameDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startDay"] = "5",
+        ["mode"] = "exact"
+    }
+}
+```
+
+### Example — gate content to day 3 or later
+
+```csharp
+new Condition
+{
+    ConditionType = "GameDay",
+    Parameters = new Dictionary<string, string>
+    {
+        ["startDay"] = "3",
+        ["mode"] = "onOrAfter"
+    }
 }
 ```
 
