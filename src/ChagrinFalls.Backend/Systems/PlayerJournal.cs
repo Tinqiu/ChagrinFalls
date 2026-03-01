@@ -19,7 +19,7 @@ public class PlayerJournal
         if (entry == null)
             throw new ArgumentNullException(nameof(entry));
         if (string.IsNullOrWhiteSpace(entry.Id))
-            throw new ArgumentException("Journal entry ID cannot be null or whitespace.", nameof(entry.Id));
+            throw new ArgumentException("Journal entry ID cannot be null or whitespace.", "entry.Id");
 
         _journalEntries[entry.Id] = entry;
     }

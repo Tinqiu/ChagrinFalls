@@ -1,4 +1,4 @@
-﻿﻿# Characters & Items
+# Characters & Items
 
 Characters and items are **storybook-level definitions** — they exist independently of any location or conversation. Once defined, they can be referenced anywhere: as a point of interest in a location, as a speaker in dialogue, or as the target of an inventory condition or effect.
 
