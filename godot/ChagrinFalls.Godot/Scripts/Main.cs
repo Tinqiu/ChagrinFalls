@@ -1,3 +1,4 @@
+using ChagrinFalls.Backend.Effects;
 using ChagrinFalls.Backend.Models;
 using ChagrinFalls.Backend.Systems;
 using Godot;
@@ -136,11 +137,13 @@ public partial class Main : Control
         }
 
         var manager = new DialogueManager(_gameState);
+        manager.RegisterHandler(new AdvanceTimeEffectHandler());
         _dialogueUI.StartConversation(manager, evt);
     }
 
     private void OnConversationFinished()
     {
+        UpdateDayTimeDisplay();
         GD.Print("Conversation finished.");
     }
 
