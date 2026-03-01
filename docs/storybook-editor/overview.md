@@ -1,4 +1,4 @@
-﻿# Storybook Editor — Overview
+﻿﻿# Storybook Editor — Overview
 
 The **Chagrin Falls Storybook Editor** is a standalone Godot application (`godot/ChagrinFalls.StoryEditor`) for designing and saving storybooks without writing JSON by hand.
 
@@ -37,6 +37,7 @@ The editor is divided into three areas:
 | 💬 | Conversation Events | One entry per event; click to edit dialogue |
 | 🧑 | Characters | Storybook-level character definitions |
 | 📦 | Items | Storybook-level item definitions |
+| 📔 | Journal Entries | Storybook-level journal entry definitions |
 
 Click the **＋ Add …** entry at the bottom of each branch to create a new element.
 
